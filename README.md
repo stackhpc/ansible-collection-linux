@@ -1,3 +1,3 @@
-# Ansible Collection - stackhpc.openstack_ops
+# Ansible Collection - stackhpc.linux
 
 This collection includes content for operating OpenStack clouds.

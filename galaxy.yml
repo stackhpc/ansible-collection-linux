@@ -1,21 +1,19 @@
 namespace: stackhpc
-name: openstack_ops
+name: linux
 version: 1.0.0
 readme: README.md
 authors:
   - Mark Goddard <mark@stackhpc.com>
-description: Ansible collection for OpenStack operations
+description: Ansible collection for configuring linux based operating systems
 license:
   - Apache2
 tags:
-  - cloud
-  - kolla
-  - openstack
+  - linux
 dependencies: {}
-repository: https://github.com/stackhpc/ansible-collection-openstack-ops
-documentation: https://github.com/stackhpc/ansible-collection-openstack-ops/branch/master/README.md
-homepage: https://github.com/stackhpc/ansible-collection-openstack-ops
-issues: https://github.com/stackhpc/ansible-collection-openstack-ops/issues
+repository: https://github.com/stackhpc/ansible-collection-linux
+documentation: https://github.com/stackhpc/ansible-collection-linux/branch/master/README.md
+homepage: https://github.com/stackhpc/ansible-collection-linux
+issues: https://github.com/stackhpc/ansible-collection-linux/issues
 build_ignore:
   - "*.tar.gz"
   - .gitignore
