@@ -1,7 +1,7 @@
 ---
 - name: Show virtual function
   debug:
-   var: virtual_function
+    var: virtual_function
 
 - name: Look up virtual function address
   command: readlink /sys/bus/pci/devices/{{ mig_definition.pci_address }}/virtfn{{ virtual_function.index }}
@@ -10,53 +10,53 @@
   register: function_address_result
 
 - block:
-  - name: Ensure mdev directory exists
-    file:
-      path: "{{ mdev_directory }}"
-      state: directory
-      owner: root
-      group: root
-      mode: "770"
-    become: true
+    - name: Ensure mdev directory exists
+      file:
+        path: "{{ mdev_directory }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "770"
+      become: true
 
-  - name: Look for existing uuid
-    find:
-      paths: "{{ mdev_directory }}"
-      recurse: true
-    become: true
-    register: uuid_result
+    - name: Look for existing uuid
+      find:
+        paths: "{{ mdev_directory }}"
+        recurse: true
+      become: true
+      register: uuid_result
 
-  - name: Display mdev uuid
-    debug:
-      var: uuid_result
+    - name: Display mdev uuid
+      debug:
+        var: uuid_result
 
-  - name: Template mdevctl config
-    template:
-      src: mdevctl-device.conf.j2
-      dest: "{{ mdev_directory }}/{{ mdev_uuid }}"
-      owner: root
-      group: root
-      mode : "600"
-    become: true
+    - name: Template mdevctl config
+      template:
+        src: mdevctl-device.conf.j2
+        dest: "{{ mdev_directory }}/{{ mdev_uuid }}"
+        owner: root
+        group: root
+        mode: "600"
+      become: true
 
-  - name: Ensure mdev active
-    command: "mdevctl start --uuid {{ mdev_uuid }}"
-    register: result
-    failed_when:
-      - result.rc != 0
-      - '"Device already exists" not in result.stderr'
-    changed_when: '"Device already exists" not in result.stderr'
-    become: true
+    - name: Ensure mdev active
+      command: "mdevctl start --uuid {{ mdev_uuid }}"
+      register: result
+      failed_when:
+        - result.rc != 0
+        - '"Device already exists" not in result.stderr'
+      changed_when: '"Device already exists" not in result.stderr'
+      become: true
 
-  - name: Enable nvidia-mdev service [{{ mdev_uuid }}]
-    # Script behind service no-ops if already enabled
-    systemd:
-      name: nvidia-mdev@{{ mdev_uuid }}.service
-      enabled: true
-    become: true
+    - name: Enable nvidia-mdev service [{{ mdev_uuid }}]
+      # Script behind service no-ops if already enabled
+      systemd:
+        name: nvidia-mdev@{{ mdev_uuid }}.service
+        enabled: true
+      become: true
 
   vars:
-     _uuid: "{{ virtual_function_address | to_uuid() }}"
-     mdev_uuid: "{{ uuid_result.files.0.path | default(_uuid, true) | basename  }}"
-     virtual_function_address: "{{ function_address_result.stdout | basename }}"
-     mdev_directory: /etc/mdevctl.d/{{ virtual_function_address }}
+    _uuid: "{{ virtual_function_address | to_uuid() }}"
+    mdev_uuid: "{{ uuid_result.files.0.path | default(_uuid, true) | basename  }}"
+    virtual_function_address: "{{ function_address_result.stdout | basename }}"
+    mdev_directory: /etc/mdevctl.d/{{ virtual_function_address }}

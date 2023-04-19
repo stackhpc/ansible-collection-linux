@@ -1,5 +1,4 @@
 ---
-
 - include_tasks:
     file: install.yml
   when: vgpu_mig_definitions | length > 0

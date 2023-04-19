@@ -1,7 +1,7 @@
 ---
 - name: Show mig definition
   debug:
-   var: mig_definition
+    var: mig_definition
 
 - name: Enable persistence mode
   # This can persist mig mode across a reboot
@@ -20,7 +20,7 @@
     dest: /etc/systemd/system/nvidia-sriov-{{ mig_definition.pci_address }}.service
     owner: root
     group: root
-    mode : "600"
+    mode: "600"
   become: true
 
 - name: Ensure nvidia-sriov.service is started

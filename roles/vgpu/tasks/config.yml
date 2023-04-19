@@ -1,5 +1,4 @@
 ---
-
 - include_tasks:
     file: gpu-facts.yml
   loop: "{{ vgpu_mig_definitions }}"
@@ -21,11 +20,11 @@
 
 - name: Configure nvidia-mig-manager overrides
   template:
-     src: nvidia-mig-manager-overrides.conf.j2
-     dest: /etc/systemd/system/nvidia-mig-manager.service.d/override.conf
-     owner: root
-     group: root
-     mode: "660"
+    src: nvidia-mig-manager-overrides.conf.j2
+    dest: /etc/systemd/system/nvidia-mig-manager.service.d/override.conf
+    owner: root
+    group: root
+    mode: "660"
   become: true
 
 - name: Ensure nvidia-mig-manager service is enabled
@@ -41,7 +40,7 @@
     dest: /etc/systemd/system/nvidia-mdev@.service
     owner: root
     group: root
-    mode : "600"
+    mode: "600"
   become: true
 
 - name: Template udev rule to tag systemd device
@@ -50,7 +49,7 @@
     dest: /etc/udev/rules.d/50-nvidia-systemd.rules
     owner: root
     group: root
-    mode : "664"
+    mode: "664"
   become: true
 
 - include_tasks:
