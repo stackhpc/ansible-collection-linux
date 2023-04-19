@@ -28,8 +28,7 @@ Example playbook:
 
 Where the configuration is done using `group_vars`:
 
-group_vars/compute_a100/gpu|
----------------------------|
+`group_vars/compute_a100/gpu`
 ```
 #nvidia-692 GRID A100D-4C
 #nvidia-693 GRID A100D-8C
@@ -59,6 +58,7 @@ vgpu_mig_definitions:
         "1g.10gb": 1
         "2g.20gb": 3
 ```
+
 
 Please see the [nvidia documentation on device profiles](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/index.html#a100-profiles).
 
