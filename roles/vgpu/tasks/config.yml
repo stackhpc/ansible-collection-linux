@@ -1,0 +1,60 @@
+---
+
+- include_tasks:
+    file: gpu-facts.yml
+  loop: "{{ vgpu_mig_definitions }}"
+  loop_control:
+    loop_var: mig_definition
+
+- name: Show card index
+  debug:
+    var: vgpu_card_index
+
+- name: Template nvidia-mig-manager config
+  template:
+    src: nvidia-mig-manager.yaml.j2
+    dest: /etc/nvidia-mig-manager/kayobe.yaml
+    owner: root
+    group: root
+    mode: "660"
+  become: true
+
+- name: Configure nvidia-mig-manager overrides
+  template:
+     src: nvidia-mig-manager-overrides.conf.j2
+     dest: /etc/systemd/system/nvidia-mig-manager.service.d/override.conf
+     owner: root
+     group: root
+     mode: "660"
+  become: true
+
+- name: Ensure nvidia-mig-manager service is enabled
+  systemd:
+    name: nvidia-mig-manager.service
+    enabled: true
+    daemon_reload: true
+  become: true
+
+- name: Template nvidia-mdev service
+  template:
+    src: nvidia-mdev.service.j2
+    dest: /etc/systemd/system/nvidia-mdev@.service
+    owner: root
+    group: root
+    mode : "600"
+  become: true
+
+- name: Template udev rule to tag systemd device
+  template:
+    src: udev.rule.j2
+    dest: /etc/udev/rules.d/50-nvidia-systemd.rules
+    owner: root
+    group: root
+    mode : "664"
+  become: true
+
+- include_tasks:
+    file: gpu.yml
+  loop: "{{ vgpu_mig_definitions }}"
+  loop_control:
+    loop_var: mig_definition

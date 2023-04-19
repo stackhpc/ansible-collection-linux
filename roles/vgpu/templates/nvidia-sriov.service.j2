@@ -1,0 +1,20 @@
+[Unit]
+Description=Enable SR-IOV on Nvidia card ({{ mig_definition.pci_address }})
+Before=nvidia-mig-manager.service
+DefaultDependencies=no
+After=local-fs.target {{ vgpu_systemd_device[mig_definition.pci_address] }}
+Wants={{ vgpu_systemd_device[mig_definition.pci_address] }}
+
+[Service]
+Type=oneshot
+User=root
+# NOTE(wszumski): There is a race in the driver initialization where if we run this too early, then
+# the mdev_support_devices entry doesn't show up in sysfs. I was unable to get this to show up again
+# without a reboot.
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/lib/nvidia/sriov-manage -e {{ mig_definition.pci_address }}
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=nvidia-mig-manager.service

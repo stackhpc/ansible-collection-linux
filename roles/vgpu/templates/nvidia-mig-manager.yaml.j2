@@ -1,0 +1,9 @@
+version: v1
+mig-configs:
+  default:
+{% for definition in vgpu_mig_definitions %}
+      # Annoying that this doesn't support pci addresses.
+      - devices: [{{ vgpu_card_index[definition.pci_address] }}]
+        mig-enabled: true
+        mig-devices: {{ definition.mig_devices | to_json }}
+{% endfor %}

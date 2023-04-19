@@ -1,0 +1,50 @@
+---
+- name: Show mig definition
+  debug:
+   var: mig_definition
+
+- name: Enable persistence mode
+  # This can persist mig mode across a reboot
+  command: nvidia-smi -i {{ mig_definition.pci_address }} -pm ENABLED
+  changed_when: false
+  become: true
+
+- name: Enable mig mode
+  command: nvidia-smi -i {{ mig_definition.pci_address }} -mig 1
+  changed_when: false
+  become: true
+
+- name: Template nvidia-sriov service
+  template:
+    src: nvidia-sriov.service.j2
+    dest: /etc/systemd/system/nvidia-sriov-{{ mig_definition.pci_address }}.service
+    owner: root
+    group: root
+    mode : "600"
+  become: true
+
+- name: Ensure nvidia-sriov.service is started
+  # Script behind service no-ops if already enabled
+  systemd:
+    name: nvidia-sriov-{{ mig_definition.pci_address }}.service
+    enabled: true
+    daemon_reload: true
+    state: restarted
+  changed_when: false
+  become: true
+
+- name: Ensure nvidia-mig-manager is started
+  # NOTE: The script beind this service no-ops if there are no changes.
+  # We need to do this to ensure the mig slices are configured after
+  # enabling sriov.
+  systemd:
+    name: nvidia-mig-manager.service
+    state: restarted
+  changed_when: false
+  become: true
+
+- include_tasks:
+    file: virtual-function.yml
+  loop: "{{ mig_definition.virtual_functions }}"
+  loop_control:
+    loop_var: virtual_function
