@@ -16,6 +16,7 @@
       state: directory
       owner: root
       group: root
+      mode: "770"
     become: true
 
   - name: Look for existing uuid
@@ -25,7 +26,8 @@
     become: true
     register: uuid_result
 
-  - debug:
+  - name: Display mdev uuid
+    debug:
       var: uuid_result
 
   - name: Template mdevctl config

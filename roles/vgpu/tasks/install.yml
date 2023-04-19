@@ -21,6 +21,7 @@
       path: "{{ dir_path }}"
       owner: root
       group: root
+      mode: "770"
 
   - name: Copy driver onto target host
     copy:
@@ -28,6 +29,7 @@
       dest: "{{ dir_path }}/{{ filename }}"
       owner: root
       group: root
+      mode: "660"
     when: false
 
   - name: Extract driver
