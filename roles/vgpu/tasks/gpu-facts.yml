@@ -21,3 +21,4 @@
 - name: Set systemd device fact
   set_fact:
     vgpu_systemd_device: "{{ vgpu_systemd_device | default({}) | combine({mig_definition.pci_address: sys_path_fact.stdout ~ '.device' }) }}"
+ 
