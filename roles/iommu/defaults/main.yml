@@ -1,0 +1,4 @@
+---
+
+# This will prevent Linux from touching devices which cannot be passed through
+iommu_pt=true

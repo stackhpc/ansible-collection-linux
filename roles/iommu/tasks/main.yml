@@ -1,0 +1,21 @@
+---
+- tasks:
+    - name: Add iommu to kernel command line (Intel)
+      include_role:
+        name: stackhpc.grubcmdline
+      vars:
+        kernel_cmdline:
+          - intel_iommu=on
+        kernel_cmdline_remove:
+          - ^intel_iommu=
+      when: "'Intel' in ansible_facts.processor.0"
+
+    - name: Set iommu=pt
+      include_role:
+        name: stackhpc.grubcmdline
+      vars:
+        kernel_cmdline:
+          - iommu=pt
+        kernel_cmdline_remove:
+          - ^iommu=
+      when: iommu_pt
