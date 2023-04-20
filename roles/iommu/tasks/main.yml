@@ -1,7 +1,7 @@
 ---
 - name: Add iommu to kernel command line (Intel)
   include_role:
-    name: stackhpc.grubcmdline
+    name: stackhpc.linux.grubcmdline
   vars:
     kernel_cmdline:
       - intel_iommu=on
@@ -11,7 +11,7 @@
 
 - name: Set iommu=pt
   include_role:
-    name: stackhpc.grubcmdline
+    name: stackhpc.linux.grubcmdline
   vars:
     kernel_cmdline:
       - iommu=pt
