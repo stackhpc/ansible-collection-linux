@@ -1,0 +1,5 @@
+---
+- name: Prepare CI
+  hosts: all
+  tasks:
+    - import_tasks: ../common/prepare.yml

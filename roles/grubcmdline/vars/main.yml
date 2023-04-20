@@ -1,0 +1,9 @@
+---
+
+# Should match on all of the the cmd line parameters
+kernel_cmdline_regex: "{{ '(' ~ kernel_cmdline | map('regex_escape') | list | join('|') ~ ')' }}"
+
+kernel_cmdline_sorted: "{{ kernel_cmdline | sort }}"
+
+# Should match on all of the the cmd line parameters that we want to remove
+kernel_cmdline_remove_regex: "{{ '(' ~ kernel_cmdline_remove | join('|') ~ ')' }}"

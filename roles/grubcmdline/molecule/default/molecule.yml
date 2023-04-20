@@ -1,0 +1,31 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: centos7-docker
+    image: mplachter/docker-centos7-molecule
+    command: /usr/sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true
+provisioner:
+  name: ansible
+  options:
+    become: true
+  lint:
+    name: ansible-lint
+    options:
+      R: true
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  directory: ../tests
+  options:
+    verbose: true
+  lint:
+    name: flake8

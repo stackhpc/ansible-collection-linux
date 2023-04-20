@@ -1,0 +1,24 @@
+---
+- name: install grub2
+  package:
+    name:
+      - grub2
+      - grub2-tools
+    state: present
+
+# FIXME: why doesn't grub2-tools install /etc/default/grub ?
+- name: Replace /etc/default/grub
+  copy:
+    src: files/grub-default
+    dest: /etc/default/grub
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "Stub out grub2-probe as it doesn't work in docker"
+  copy:
+    src: files/grub2-probe
+    dest: /usr/sbin/grub2-probe
+    owner: root
+    group: root
+    mode: 0755
