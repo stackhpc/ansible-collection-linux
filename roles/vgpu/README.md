@@ -132,7 +132,7 @@ RequiredBy=nvidia-mig-manager.service
 
 There will be a unit file per card.
 
-### 2) Apply MIG confifuration
+### 2) Apply MIG configuration
 
 This is applied using nvidia-mig-manager. The config file can be found at the following path:
 
