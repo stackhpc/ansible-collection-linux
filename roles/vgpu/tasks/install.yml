@@ -1,0 +1,80 @@
+---
+- name: Install OS dependencies
+  vars:
+    pkgs:
+      - unzip
+      - gcc
+      - make
+      - "{{ 'kernel-devel' if ansible_facts.os_family == 'RedHat' }}"
+      # sriov-manage requires lspci
+      - pciutils
+      - mdevctl
+  package:
+    name: "{{ pkgs | select }}"
+    state: present
+  become: true
+
+- block:
+    - name: Ensure target directory exists
+      file:
+        state: directory
+        path: "{{ dir_path }}"
+        owner: root
+        group: root
+        mode: "770"
+
+    - name: Copy driver onto target host
+      copy:
+        src: "{{ vgpu_driver_path }}"
+        dest: "{{ dir_path }}/{{ filename }}"
+        owner: root
+        group: root
+        mode: "660"
+      when: false
+
+    - name: Extract driver
+      unarchive:
+        src: "{{ vgpu_driver_path }}"
+        dest: "{{ dir_path }}"
+        owner: root
+        group: root
+        creates: "{{ dir_path }}/Host_Drivers"
+
+    - name: Find .run script
+      find:
+        paths: "{{ dir_path }}/Host_Drivers"
+        patterns: "*.run"
+      register: find_result
+
+    - name: Set execute bit
+      file:
+        path: "{{ install_script }}"
+        mode: "u+x"
+
+    - name: Run the install script
+      # NOTE: This compiles for currently running kernel, can force with --kernel-name
+      shell: |-
+        {{ install_script }} -q --dkms --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
+      args:
+        creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
+
+  vars:
+    dir_path: "/opt/{{ filename | splitext | first }}"
+    filename: "{{ vgpu_driver_path | basename }}"
+    install_script: "{{ find_result.files.0.path }}"
+    ansible_become: true
+
+- name: Install nvidia-mig-manager (Redhat)
+  package:
+    name: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager-0.5.1-1.x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  become: true
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Install nvidia-mig-manager (Debian)
+  package:
+    deb: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager_0.5.1-1_amd64.deb
+    state: present
+  become: true
+  when: ansible_facts.os_family == "Debian"

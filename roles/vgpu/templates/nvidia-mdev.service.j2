@@ -1,0 +1,15 @@
+[Unit]
+Description=Enable mdev device (%i)
+After=nvidia-mig-manager.service
+Before=docker.service
+Requires=nvidia-mig-manager.service
+
+[Service]
+Type=oneshot
+User=root
+ExecStartPre=/bin/sleep 5
+ExecStart=-/usr/sbin/mdevctl start --uuid %i
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

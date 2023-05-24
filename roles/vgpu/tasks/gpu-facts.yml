@@ -1,0 +1,22 @@
+---
+# TODO: submit bug report to nvidia-mig-manger about not supporting PCI IDs
+
+- name: Look up card index
+  command: nvidia-smi -i {{ mig_definition.pci_address }} --query-gpu="index" --format csv,noheader
+  become: true
+  changed_when: false
+  register: address_fact
+
+- name: Set card index fact
+  set_fact:
+    vgpu_card_index: "{{ vgpu_card_index | default({}) | combine({mig_definition.pci_address: address_fact.stdout }) }}"
+
+- name: Determine path for systemd device
+  shell: systemd-escape -p `realpath '/sys/bus/pci/devices/{{ mig_definition.pci_address }}'`
+  become: true
+  changed_when: false
+  register: sys_path_fact
+
+- name: Set systemd device fact
+  set_fact:
+    vgpu_systemd_device: "{{ vgpu_systemd_device | default({}) | combine({mig_definition.pci_address: sys_path_fact.stdout ~ '.device' }) }}"

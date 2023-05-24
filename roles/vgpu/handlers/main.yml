@@ -1,0 +1,6 @@
+---
+- name: Restart nvidia-mig-manager
+  systemd:
+    state: restarted
+    name: nvidia-mig-manager
+  become: true
