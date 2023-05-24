@@ -27,7 +27,8 @@
       {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX_DEFAULT.*$', multiline=True)
       | regex_replace('^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$', '\1') }}
 
-- debug:
+- name: Display GRUB_CMDLINE_DEFAULT
+  debug:
     var: grub_cmdline_linux_default
 
 - name: Determine which parameters need removing
@@ -36,14 +37,16 @@
   set_fact:
     grub_cmdline_linux_remove: "{{ grub_cmdline_linux_default.split() | select('search', kernel_cmdline_remove_regex) | list }}"
 
-- debug:
+- name: Display parameters to be removed
+  debug:
     var: grub_cmdline_linux_remove
 
 - name: Updated kernel cmd line params
   set_fact:
     grub_cmdline_linux_new: "{{ grub_cmdline_linux_default.split() | difference(grub_cmdline_linux_remove) + kernel_cmdline }}"
 
-- debug:
+- name: Display newly computed GRUB_CMDLINE_DEFAULT
+  debug:
     var: grub_cmdline_linux_new
 
 - name: Set GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
@@ -70,6 +73,7 @@
     follow: true
     content: "{{ grub_mkconfig_result.stdout }}"
     dest: "{{ item }}"
+    mode: 0660
   become: true
   register: grub_update_result
   with_items:
