@@ -1,5 +1,5 @@
 ---
 vgpu_driver_path: "{{ lookup('env', 'HOME') }}/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"
 vgpu_driver_force_install: false
-
+vgpu_driver_dkms: false
 vgpu_mig_definitions: []
