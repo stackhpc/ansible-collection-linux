@@ -54,7 +54,7 @@
     - name: Run the install script
       # NOTE: This compiles for currently running kernel, can force with --kernel-name
       shell: |-
-        {{ install_script }} -q --dkms --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
+        {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
       args:
         creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
 
