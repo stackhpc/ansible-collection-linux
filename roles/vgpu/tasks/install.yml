@@ -61,7 +61,7 @@
 
     - name: Reboot after driver install
       reboot:
-        reboot_timeout: 10000
+        reboot_timeout: 1800
       when: install_result is changed
 
   vars:
