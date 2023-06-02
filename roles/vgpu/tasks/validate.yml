@@ -1,0 +1,6 @@
+---
+
+- name: Validate that driver URL is configured
+  assert:
+    that: vgpu_driver_url | length > 0
+    fail_msg: "Please ensure you set the variable: vgpu_driver_url"

@@ -3,7 +3,11 @@
 ## Prerequsities
 
 - [Download Nvidia GRID driver](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) (This requires a login).
-    - By default, the role expects the driver to exist at the following path: `$HOME/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`. This can be customised with the `vgpu_driver_path` variable.
+    - This location of this file can be customised with the `vgpu_driver_url` variable:
+      * e.g to use an artifact uploaded to a http server:
+      `vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
+      * e.g to use file the control host:
+      `vgpu_driver_url: file://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
 
 - Enable IOMUU
     - Make sure the related options are enabled in the BIOS
@@ -22,6 +26,8 @@ Example playbook:
 
 ```
 - hosts: compute_gpu_a100
+  vars:
+    nvidia_driver_url: "http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"
   tasks:
     - import_role:
         name: stackhpc.linux.vgpu
@@ -44,7 +50,8 @@ Where the configuration is done using `group_vars`:
 #nvidia-702 GRID A100D-4-40C
 #nvidia-703 GRID A100D-7-80C
 #nvidia-707 GRID A100D-1-10CME
-vgpu_mig_definitions:
+vgpu_definitions:
+    # Configuring a MIG backed VGPU
     - pci_address: "0000:17:00.0"
       virtual_functions:
         - mdev_type: nvidia-700
@@ -58,6 +65,13 @@ vgpu_mig_definitions:
       mig_devices:
         "1g.10gb": 1
         "2g.20gb": 3
+    # Configuring a card in a time-sliced configuration (non-MIG backed)
+    - pci_address: "0000:65:00.0"
+      virtual_functions:
+        - mdev_type: nvidia-697
+          index: 0
+        - mdev_type: nvidia-697
+          index: 1
 ```
 
 
@@ -72,15 +86,19 @@ Example `nova.conf` configuration:
 ```
 {% if inventory_hostname in groups['compute_gpu_a100'] %}
 [devices]
-enabled_mdev_types = nvidia-700, nvidia-699
+enabled_mdev_types = nvidia-700, nvidia-699, nvidia-697
 
 [mdev_nvidia-700]
-device_addresses = 0000:17:00.4,0000:17:00.5,0000:17:00.6,0000:65:00.4,0000:65:00.5,0000:65:00.6
+device_addresses = 0000:17:00.4,0000:17:00.5,0000:17:00.6
 mdev_class = CUSTOM_NVIDIA_700
 
 [mdev_nvidia-699]
-device_addresses = 0000:17:00.7,0000:65:00.7
+device_addresses = 0000:17:00.7
 mdev_class = CUSTOM_NVIDIA_699
+
+[mdev_nvidia-697]
+device_addresses = 0000:65:00.4,0000:65:00.5
+mdev_class = CUSTOM_NVIDIA_697
 {% endif %}
 ```
 
@@ -93,13 +111,14 @@ be obtained by checking the mdevctl configuration after running the role:
 dc352ef3-efeb-4a5d-a48e-912eb230bc76 0000:17:00.5 nvidia-700 manual (defined)
 a464fbae-1f89-419a-a7bd-3a79c7b2eef4 0000:17:00.6 nvidia-700 manual (defined)
 f3b823d3-97c8-4e0a-ae1b-1f102dcb3bce 0000:17:00.7 nvidia-699 manual (defined)
-330be289-ba3f-4416-8c8a-b46ba7e51284 0000:65:00.4 nvidia-700 manual (defined)
-1ba5392c-c61f-4f48-8fb1-4c6b2bbb0673 0000:65:00.5 nvidia-700 manual (defined)
-f6868020-eb3a-49c6-9701-6c93e4e3fa9c 0000:65:00.6 nvidia-700 manual (defined)
-00501f37-c468-5ba4-8be2-8d653c4604ed 0000:65:00.7 nvidia-699 manual (defined)
+330be289-ba3f-4416-8c8a-b46ba7e51284 0000:65:00.4 nvidia-697 manual (defined)
+1ba5392c-c61f-4f48-8fb1-4c6b2bbb0673 0000:65:00.5 nvidia-697 manual (defined)
 ```
 
 ## Start up ordering of systemd services
+
+The role will configure several systemd services. The start up ordering is detailed in this
+section. NOTE: These are not steps you have to do manually.
 
 ### 1) Enable SRIOV on device
 
@@ -145,10 +164,6 @@ mig-configs:
   default:
       # Annoying that this doesn't support pci addresses.
       - devices: [0]
-        mig-enabled: true
-        mig-devices: {"1g.10gb": 1, "2g.20gb": 3}
-      # Annoying that this doesn't support pci addresses.
-      - devices: [1]
         mig-enabled: true
         mig-devices: {"1g.10gb": 1, "2g.20gb": 3}
 ```
