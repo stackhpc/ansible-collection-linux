@@ -67,7 +67,7 @@
 
 - name: Install nvidia-mig-manager (Redhat)
   package:
-    name: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager-0.5.1-1.x86_64.rpm
+    name: "{{ vgpu_nvidia_mig_manager_rpm_url }}"
     state: present
     disable_gpg_check: true
   become: true
@@ -77,7 +77,7 @@
 
 - name: Install nvidia-mig-manager (Debian)
   package:
-    deb: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager_0.5.1-1_amd64.deb
+    deb: "{{ vgpu_nvidia_mig_manager_deb_url }}"
     state: present
   become: true
   when:
