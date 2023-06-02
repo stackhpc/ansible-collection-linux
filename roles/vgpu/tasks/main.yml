@@ -1,8 +1,9 @@
 ---
-- include_tasks:
-    file: install.yml
-  when: vgpu_mig_definitions | length > 0
 
 - include_tasks:
-    file: config.yml
-  when: vgpu_mig_definitions | length > 0
+    file: install.yml
+  when: vgpu_definitions | length > 0
+
+- include_tasks:
+    file: configure.yml
+  when: vgpu_definitions | length > 0

@@ -1,6 +1,6 @@
 # stackhpc.linux.vgpu
 
-## Prerequisites
+## Prerequsities
 
 - [Download Nvidia GRID driver](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) (This requires a login).
     - By default, the role expects the driver to exist at the following path: `$HOME/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`. This can be customised with the `vgpu_driver_path` variable.
