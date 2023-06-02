@@ -4,7 +4,7 @@
     var: virtual_function
 
 - name: Look up virtual function address
-  command: readlink /sys/bus/pci/devices/{{ mig_definition.pci_address }}/virtfn{{ virtual_function.index }}
+  command: readlink /sys/bus/pci/devices/{{ vgpu_definition.pci_address }}/virtfn{{ virtual_function.index }}
   become: true
   changed_when: false
   register: function_address_result

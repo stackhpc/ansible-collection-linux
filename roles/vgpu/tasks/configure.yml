@@ -1,0 +1,38 @@
+---
+- include_tasks:
+    file: gpu-facts.yml
+  loop: "{{ vgpu_definitions }}"
+  loop_control:
+    loop_var: vgpu_definition
+
+- name: Show card index
+  debug:
+    var: vgpu_card_index
+
+- include_tasks:
+    file: configure-mig.yml
+  when: vgpu_mig_enabled | bool
+
+- name: Template nvidia-mdev service
+  template:
+    src: nvidia-mdev.service.j2
+    dest: /etc/systemd/system/nvidia-mdev@.service
+    owner: root
+    group: root
+    mode: "600"
+  become: true
+
+- name: Template udev rule to tag systemd device
+  template:
+    src: udev.rule.j2
+    dest: /etc/udev/rules.d/50-nvidia-systemd.rules
+    owner: root
+    group: root
+    mode: "664"
+  become: true
+
+- include_tasks:
+    file: gpu-configure.yml
+  loop: "{{ vgpu_definitions }}"
+  loop_control:
+    loop_var: vgpu_definition

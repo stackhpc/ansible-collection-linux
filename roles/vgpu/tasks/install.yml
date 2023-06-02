@@ -23,22 +23,15 @@
         group: root
         mode: "770"
 
-    - name: Copy driver onto target host
-      copy:
-        src: "{{ vgpu_driver_path }}"
-        dest: "{{ dir_path }}/{{ filename }}"
-        owner: root
-        group: root
-        mode: "660"
-      when: false
-
     - name: Extract driver
       unarchive:
-        src: "{{ vgpu_driver_path }}"
+        src: "{{ vgpu_driver_url_components.path if is_file else vgpu_driver_url }}"
         dest: "{{ dir_path }}"
         owner: root
         group: root
         creates: "{{ dir_path }}/Host_Drivers"
+      vars:
+         is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
 
     - name: Find .run script
       find:
@@ -61,12 +54,14 @@
 
     - name: Reboot after driver install
       reboot:
-        reboot_timeout: 1800
+        reboot_timeout: 3600
+        post_reboot_delay: 60
       when: install_result is changed
 
   vars:
+    vgpu_driver_url_components: "{{ vgpu_driver_url | urlsplit }}"
     dir_path: "/opt/{{ filename | splitext | first }}"
-    filename: "{{ vgpu_driver_path | basename }}"
+    filename: "{{ vgpu_driver_url_components.path | basename }}"
     install_script: "{{ find_result.files.0.path }}"
     ansible_become: true
 
@@ -76,11 +71,15 @@
     state: present
     disable_gpg_check: true
   become: true
-  when: ansible_facts.os_family == "RedHat"
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - vgpu_mig_enabled
 
 - name: Install nvidia-mig-manager (Debian)
   package:
     deb: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager_0.5.1-1_amd64.deb
     state: present
   become: true
-  when: ansible_facts.os_family == "Debian"
+  when:
+    - ansible_facts.os_family == "Debian"
+    - vgpu_mig_enabled
