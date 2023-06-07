@@ -1,9 +1,9 @@
 # stackhpc.linux.vgpu
 
-## Prerequsities
+## Prerequisites
 
 - [Download Nvidia GRID driver](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) (This requires a login).
-    - This location of this file can be customised with the `vgpu_driver_url` variable:
+    - The location of this file can be customised with the `vgpu_driver_url` variable:
       * e.g to use an artifact uploaded to a http server:
       `vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
       * e.g to use file the control host:
