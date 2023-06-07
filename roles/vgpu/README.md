@@ -7,7 +7,7 @@
       * e.g to use an artifact uploaded to a http server:
       `vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
       * e.g to use file the control host:
-      `vgpu_driver_url: file://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
+      `vgpu_driver_url: "{{ lookup('env', 'HOME'}}/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"`
 
 - Enable IOMUU
     - Make sure the related options are enabled in the BIOS
