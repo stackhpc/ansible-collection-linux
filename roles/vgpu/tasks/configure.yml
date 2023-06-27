@@ -13,15 +13,6 @@
     file: configure-mig.yml
   when: vgpu_mig_enabled | bool
 
-- name: Template nvidia-mdev service
-  template:
-    src: nvidia-mdev.service.j2
-    dest: /etc/systemd/system/nvidia-mdev@.service
-    owner: root
-    group: root
-    mode: "600"
-  become: true
-
 - name: Template udev rule to tag systemd device
   template:
     src: udev.rule.j2
