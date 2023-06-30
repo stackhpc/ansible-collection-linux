@@ -23,7 +23,7 @@
   become: true
 
 - include_tasks:
-    file: gpu-configure.yml
+    file: configure-gpu.yml
   loop: "{{ vgpu_definitions }}"
   loop_control:
     loop_var: vgpu_definition
