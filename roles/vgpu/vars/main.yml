@@ -1,0 +1,3 @@
+---
+
+vgpu_mig_enabled: "{{ vgpu_definitions | selectattr('mig_devices', 'defined') | length > 0 }}"

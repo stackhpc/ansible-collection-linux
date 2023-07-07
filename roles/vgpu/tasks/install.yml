@@ -1,0 +1,86 @@
+---
+- name: Install OS dependencies
+  vars:
+    pkgs:
+      - unzip
+      - gcc
+      - make
+      - "{{ 'kernel-devel' if ansible_facts.os_family == 'RedHat' }}"
+      # sriov-manage requires lspci
+      - pciutils
+      - mdevctl
+  package:
+    name: "{{ pkgs | select }}"
+    state: present
+  become: true
+
+- block:
+    - name: Ensure target directory exists
+      file:
+        state: directory
+        path: "{{ dir_path }}"
+        owner: root
+        group: root
+        mode: "770"
+
+    - name: Extract driver
+      unarchive:
+        src: "{{ vgpu_driver_url_components.path if is_file else vgpu_driver_url }}"
+        dest: "{{ dir_path }}"
+        owner: root
+        group: root
+        creates: "{{ dir_path }}/Host_Drivers"
+        remote_src: "{{ omit if is_file else true }}"
+      vars:
+         is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
+
+    - name: Find .run script
+      find:
+        paths: "{{ dir_path }}/Host_Drivers"
+        patterns: "*.run"
+      register: find_result
+
+    - name: Set execute bit
+      file:
+        path: "{{ install_script }}"
+        mode: "u+x"
+
+    - name: Run the install script
+      # NOTE: This compiles for currently running kernel, can force with --kernel-name
+      shell: |-
+        {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
+      args:
+        creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
+      register: install_result
+
+    - name: Reboot after driver install
+      reboot:
+        reboot_timeout: 3600
+        post_reboot_delay: 60
+      when: install_result is changed
+
+  vars:
+    vgpu_driver_url_components: "{{ vgpu_driver_url | urlsplit }}"
+    dir_path: "/opt/{{ filename | splitext | first }}"
+    filename: "{{ vgpu_driver_url_components.path | basename }}"
+    install_script: "{{ find_result.files.0.path }}"
+    ansible_become: true
+
+- name: Install nvidia-mig-manager (Redhat)
+  package:
+    name: "{{ vgpu_nvidia_mig_manager_rpm_url }}"
+    state: present
+    disable_gpg_check: true
+  become: true
+  when:
+    - ansible_facts.os_family == "RedHat"
+    - vgpu_mig_enabled
+
+- name: Install nvidia-mig-manager (Debian)
+  package:
+    deb: "{{ vgpu_nvidia_mig_manager_deb_url }}"
+    state: present
+  become: true
+  when:
+    - ansible_facts.os_family == "Debian"
+    - vgpu_mig_enabled

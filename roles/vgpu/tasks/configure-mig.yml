@@ -1,0 +1,26 @@
+---
+
+- name: Template nvidia-mig-manager config
+  template:
+    src: nvidia-mig-manager.yaml.j2
+    dest: /etc/nvidia-mig-manager/kayobe.yaml
+    owner: root
+    group: root
+    mode: "660"
+  become: true
+
+- name: Configure nvidia-mig-manager overrides
+  template:
+    src: nvidia-mig-manager-overrides.conf.j2
+    dest: /etc/systemd/system/nvidia-mig-manager.service.d/override.conf
+    owner: root
+    group: root
+    mode: "660"
+  become: true
+
+- name: Ensure nvidia-mig-manager service is enabled
+  systemd:
+    name: nvidia-mig-manager.service
+    enabled: true
+    daemon_reload: true
+  become: true
