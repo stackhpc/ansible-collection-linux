@@ -48,9 +48,11 @@
     - name: Run the install script
       # NOTE: This compiles for currently running kernel, can force with --kernel-name
       shell: |-
-        {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
+        {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --tmpdir {{ tmp_path }} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
       args:
         creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
+      environment:
+        TMPDIR: "{{ tmp_path }}"
       register: install_result
 
     - name: Reboot after driver install
@@ -62,6 +64,7 @@
   vars:
     vgpu_driver_url_components: "{{ vgpu_driver_url | urlsplit }}"
     dir_path: "/opt/{{ filename | splitext | first }}"
+    tmp_path: "{{ dir_path }}/tmp"
     filename: "{{ vgpu_driver_url_components.path | basename }}"
     install_script: "{{ find_result.files.0.path }}"
     ansible_become: true
