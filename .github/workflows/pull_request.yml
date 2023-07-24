@@ -34,7 +34,7 @@ jobs:
           else
               ansible_package=ansible-core
           fi
-          pip install $ansible_package==${{ matrix.ansible }}.* 'ansible-lint==5.*'
+          pip install $ansible_package==${{ matrix.ansible }}.* 'ansible-lint==6.*'
 
       - name: Linting code
         run: |
