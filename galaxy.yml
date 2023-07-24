@@ -6,7 +6,7 @@ authors:
   - Mark Goddard <mark@stackhpc.com>
 description: Ansible collection for configuring linux based operating systems
 license:
-  - Apache2
+  - "Apache-2.0"
 tags:
   - linux
 dependencies: {}
