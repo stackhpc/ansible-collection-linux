@@ -1,23 +1,23 @@
 ---
 - name: Show VGPU definition
-  debug:
+  ansible.builtin.debug:
     var: vgpu_definition
 
 - name: Enable persistence mode
   # This can persist mig mode across a reboot
-  command: nvidia-smi -i {{ vgpu_definition.pci_address }} -pm ENABLED
+  ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} -pm ENABLED
   changed_when: false
   become: true
   when: vgpu_definition.mig_devices is defined
 
 - name: Enable mig mode
-  command: nvidia-smi -i {{ vgpu_definition.pci_address }} -mig 1
+  ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} -mig 1
   changed_when: false
   become: true
   when: vgpu_definition.mig_devices is defined
 
 - name: Template nvidia-sriov service
-  template:
+  ansible.builtin.template:
     src: nvidia-sriov.service.j2
     dest: /etc/systemd/system/nvidia-sriov-{{ vgpu_definition.pci_address }}.service
     owner: root
@@ -28,7 +28,7 @@
 
 - name: Ensure nvidia-sriov.service is started
   # Script behind service no-ops if already enabled
-  systemd:
+  ansible.builtin.systemd:
     name: nvidia-sriov-{{ vgpu_definition.pci_address }}.service
     enabled: true
     daemon_reload: true
@@ -41,14 +41,15 @@
   # NOTE: The script beind this service no-ops if there are no changes.
   # We need to do this to ensure the mig slices are configured after
   # enabling sriov.
-  systemd:
+  ansible.builtin.systemd:
     name: nvidia-mig-manager.service
     state: restarted
   changed_when: false
   become: true
   when: vgpu_mig_enabled | bool
 
-- include_tasks:
+- name: Include virtual-function.yml
+  ansible.builtin.include_tasks:
     file: virtual-function.yml
   loop: "{{ vgpu_definition.virtual_functions | default([]) }}"
   loop_control:

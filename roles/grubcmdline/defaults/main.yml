@@ -1,12 +1,9 @@
 ---
-
 # list of parameters to add to the kernel cmdline
 kernel_cmdline: []
-
 # list of regexs to match against kernel paramerters. Any matches will be
 # removed.
 kernel_cmdline_remove: []
-
 kernel_restart_handler: reboot
 
 # optionally skip backing up the config file. Can cause issues on some

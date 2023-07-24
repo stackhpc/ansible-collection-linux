@@ -1,13 +1,15 @@
 ---
-
-- include_tasks:
+- name: Include validate.yml
+  ansible.builtin.include_tasks:
     file: validate.yml
   when: vgpu_definitions | length > 0
 
-- include_tasks:
+- name: Include install.yml
+  ansible.builtin.include_tasks:
     file: install.yml
   when: vgpu_definitions | length > 0
 
-- include_tasks:
+- name: Include configure.yml
+  ansible.builtin.include_tasks:
     file: configure.yml
   when: vgpu_definitions | length > 0

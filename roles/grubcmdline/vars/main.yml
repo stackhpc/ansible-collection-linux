@@ -1,5 +1,4 @@
 ---
-
 # Should match on all of the the cmd line parameters
 kernel_cmdline_regex: "{{ '(' ~ kernel_cmdline | map('regex_escape') | list | join('|') ~ ')' }}"
 

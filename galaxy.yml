@@ -1,12 +1,13 @@
+---
 namespace: stackhpc
 name: linux
-version: 1.0.0
+version: 0.1.3
 readme: README.md
 authors:
   - Mark Goddard <mark@stackhpc.com>
 description: Ansible collection for configuring linux based operating systems
 license:
-  - "Apache-2.0"
+  - Apache-2.0
 tags:
   - linux
 dependencies: {}

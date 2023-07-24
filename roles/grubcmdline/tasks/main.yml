@@ -1,64 +1,63 @@
 ---
-
 - name: Check current kernel command line args
-  command: cat /proc/cmdline
+  ansible.builtin.command: cat /proc/cmdline
   register: result
   changed_when: false
 
 - name: Determine if we need to update
-  set_fact:
+  ansible.builtin.set_fact:
     old_cmdline: "{{ result.stdout.split() | select('search', kernel_cmdline_regex) | sort | list }}"
 
 - name: Notify reboot handler
-  debug:
+  ansible.builtin.debug:
     msg: Old command line was {{ result.stdout }}
   changed_when: old_cmdline != kernel_cmdline | sort | list
   notify: "{{ kernel_restart_handler }}"
 
 - name: Slurp /etc/default/grub
-  slurp:
+  ansible.builtin.slurp:
     path: /etc/default/grub
   register: grub_result
   become: true
 
 - name: Set fact containing GRUB_CMDLINE_LINUX_DEFAULT
-  set_fact:
+  ansible.builtin.set_fact:
     grub_cmdline_linux_default: >-
       {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX_DEFAULT.*$', multiline=True)
       | regex_replace('^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$', '\1') }}
 
 - name: Display GRUB_CMDLINE_DEFAULT
-  debug:
+  ansible.builtin.debug:
     var: grub_cmdline_linux_default
 
 - name: Determine which parameters need removing
   # We use a regex here so you can remove parameters regardless of their value, e.g to remove iommu=on you
   # could use the regex: ^iommu=
-  set_fact:
+  ansible.builtin.set_fact:
     grub_cmdline_linux_remove: "{{ grub_cmdline_linux_default.split() | select('search', kernel_cmdline_remove_regex) | list }}"
 
 - name: Display parameters to be removed
-  debug:
+  ansible.builtin.debug:
     var: grub_cmdline_linux_remove
 
 - name: Updated kernel cmd line params
-  set_fact:
+  ansible.builtin.set_fact:
     grub_cmdline_linux_new: "{{ grub_cmdline_linux_default.split() | difference(grub_cmdline_linux_remove) + kernel_cmdline }}"
 
 - name: Display newly computed GRUB_CMDLINE_DEFAULT
-  debug:
+  ansible.builtin.debug:
     var: grub_cmdline_linux_new
 
 - name: Set GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
-    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT'
+    regexp: ^GRUB_CMDLINE_LINUX_DEFAULT
     line: GRUB_CMDLINE_LINUX_DEFAULT="{{ grub_cmdline_linux_new | join(' ') }}"
     backup: "{{ backup_grub_config_file }}"
   become: true
 
 - name: Generate new grub-config (RedHat <= 8.x)
-  command: grub2-mkconfig
+  ansible.builtin.command: grub2-mkconfig
   register: grub_mkconfig_result
   become: true
   changed_when: false
@@ -66,14 +65,14 @@
     - ansible_facts.os_family == "RedHat"
     - ansible_facts.distribution_version is version('8.0', '<=')
 
-- name: replace current grub config (RedHat <= 8.x)
-  copy:
+- name: Replace current grub config (RedHat <= 8.x)
+  ansible.builtin.copy:
     backup: "{{ backup_grub_config_file }}"
     # /etc/grub2.cfg -> ../boot/grub2/grub.cfg
     follow: true
     content: "{{ grub_mkconfig_result.stdout }}"
     dest: "{{ item }}"
-    mode: 0660
+    mode: "0660"
   become: true
   register: grub_update_result
   with_items:
@@ -84,15 +83,15 @@
     - ansible_facts.os_family == "RedHat"
     - ansible_facts.distribution_version is version('8.0', '<=')
 
-- name: Generate new grub config (Ubuntu/Debian)
-  command: /usr/sbin/update-grub
+- name: Generate new grub config (Ubuntu/Debian)  # noqa: no-changed-when
+  ansible.builtin.command: /usr/sbin/update-grub
   become: true
   when: ansible_facts.os_family == "Debian"
 
 - name: Generate new grub-config (RedHat >= 9.x)
   # NOTE: This is the new fangled way: https://unix.stackexchange.com/questions/557841/what-is-the-correct-way-to-handle-default-kernelopts-in-fedora-31
   # As grub reads configuration from /boot/loader/entries/.
-  command: grubby --update-kernel=ALL --args='{{ grub_cmdline_linux_new | join(" ") }}' --remove-args '{{ grub_cmdline_linux_remove | join(" ") }}'
+  ansible.builtin.command: grubby --update-kernel=ALL --args='{{ grub_cmdline_linux_new | join(" ") }}' --remove-args '{{ grub_cmdline_linux_remove | join(" ") }}'
   changed_when: false
   become: true
   when:

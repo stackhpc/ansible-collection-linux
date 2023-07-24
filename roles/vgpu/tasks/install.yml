@@ -9,14 +9,22 @@
       # sriov-manage requires lspci
       - pciutils
       - mdevctl
-  package:
+  ansible.builtin.package:
     name: "{{ pkgs | select }}"
     state: present
   become: true
 
-- block:
+- name: Install block
+  vars:
+    vgpu_driver_url_components: "{{ vgpu_driver_url | urlsplit }}"
+    dir_path: /opt/{{ filename | splitext | first }}
+    tmp_path: "{{ dir_path }}/tmp"
+    filename: "{{ vgpu_driver_url_components.path | basename }}"
+    install_script: "{{ find_result.files.0.path }}"
+    ansible_become: true
+  block:
     - name: Ensure target directory exists
-      file:
+      ansible.builtin.file:
         state: directory
         path: "{{ dir_path }}"
         owner: root
@@ -24,7 +32,7 @@
         mode: "770"
 
     - name: Extract driver
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ vgpu_driver_url_components.path if is_file else vgpu_driver_url }}"
         dest: "{{ dir_path }}"
         owner: root
@@ -32,22 +40,22 @@
         creates: "{{ dir_path }}/Host_Drivers"
         remote_src: "{{ omit if is_file else true }}"
       vars:
-         is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
+        is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
 
     - name: Find .run script
-      find:
+      ansible.builtin.find:
         paths: "{{ dir_path }}/Host_Drivers"
         patterns: "*.run"
       register: find_result
 
     - name: Set execute bit
-      file:
+      ansible.builtin.file:
         path: "{{ install_script }}"
-        mode: "u+x"
+        mode: u+x
 
     - name: Run the install script
       # NOTE: This compiles for currently running kernel, can force with --kernel-name
-      shell: |-
+      ansible.builtin.shell: |-
         {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --tmpdir {{ tmp_path }} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
       args:
         creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
@@ -55,22 +63,14 @@
         TMPDIR: "{{ tmp_path }}"
       register: install_result
 
-    - name: Reboot after driver install
-      reboot:
+    - name: Reboot after driver install # noqa: no-handler
+      ansible.builtin.reboot:
         reboot_timeout: 3600
         post_reboot_delay: 60
       when: install_result is changed
 
-  vars:
-    vgpu_driver_url_components: "{{ vgpu_driver_url | urlsplit }}"
-    dir_path: "/opt/{{ filename | splitext | first }}"
-    tmp_path: "{{ dir_path }}/tmp"
-    filename: "{{ vgpu_driver_url_components.path | basename }}"
-    install_script: "{{ find_result.files.0.path }}"
-    ansible_become: true
-
 - name: Install nvidia-mig-manager (Redhat)
-  package:
+  ansible.builtin.package:
     name: "{{ vgpu_nvidia_mig_manager_rpm_url }}"
     state: present
     disable_gpg_check: true
@@ -80,7 +80,7 @@
     - vgpu_mig_enabled
 
 - name: Install nvidia-mig-manager (Debian)
-  package:
+  ansible.builtin.package:
     deb: "{{ vgpu_nvidia_mig_manager_deb_url }}"
     state: present
   become: true

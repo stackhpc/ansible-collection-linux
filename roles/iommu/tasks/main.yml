@@ -1,20 +1,20 @@
 ---
 - name: Add iommu to kernel command line (Intel)
-  include_role:
+  ansible.builtin.include_role:
     name: stackhpc.linux.grubcmdline
   vars:
-    kernel_cmdline:
+    kernel_cmdline:  # noqa: var-naming[no-role-prefix]
       - intel_iommu=on
-    kernel_cmdline_remove:
+    kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
   when: "'Intel' in ansible_facts.processor.0"
 
 - name: Set iommu=pt
-  include_role:
+  ansible.builtin.include_role:
     name: stackhpc.linux.grubcmdline
   vars:
-    kernel_cmdline:
+    kernel_cmdline: # noqa: var-naming[no-role-prefix]
       - iommu=pt
-    kernel_cmdline_remove:
+    kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^iommu=
   when: iommu_pt
