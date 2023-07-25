@@ -2,4 +2,9 @@
 exclude_paths:
   - .cache/
   - .github/
+
+skip_list:
+  - yaml[line-length]
+  - galaxy[no-changelog]
+
 use_default_rules: true
