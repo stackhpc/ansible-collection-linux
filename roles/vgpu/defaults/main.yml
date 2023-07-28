@@ -2,6 +2,8 @@
 vgpu_driver_url: ""
 vgpu_driver_force_install: false
 vgpu_driver_dkms: false
+vgpu_do_reboot: true
+vgpu_reboot_timeout: 3600
 
 # Deprecated: use vgpu_definitions instead.
 vgpu_mig_definitions: []
