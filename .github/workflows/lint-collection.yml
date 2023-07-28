@@ -5,4 +5,4 @@ name: Ansible collection linters
 jobs:
   lint:
     # 8
-    uses: stackhpc/.github/.github/workflows/lint-collection.yml@bugfix/collection-sanity
+    uses: stackhpc/.github/.github/workflows/lint-collection.yml@bugfix/collection-take-2
