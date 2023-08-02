@@ -65,9 +65,11 @@
 
     - name: Reboot after driver install # noqa: no-handler
       ansible.builtin.reboot:
-        reboot_timeout: 3600
+        reboot_timeout: "{{ vgpu_reboot_timeout }}"
         post_reboot_delay: 60
-      when: install_result is changed
+      when:
+        - install_result is changed
+        - vgpu_do_reboot | bool
 
 - name: Install nvidia-mig-manager (Redhat)
   ansible.builtin.package:
