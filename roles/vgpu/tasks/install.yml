@@ -31,37 +31,13 @@
         group: root
         mode: "770"
 
-    - name: Extract driver
-      ansible.builtin.unarchive:
-        src: "{{ vgpu_driver_url_components.path if is_file else vgpu_driver_url }}"
-        dest: "{{ dir_path }}"
-        owner: root
-        group: root
-        creates: "{{ dir_path }}/Host_Drivers"
-        remote_src: "{{ omit if is_file else true }}"
-      vars:
-        is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
+    - name: Intall a zip
+      ansible.builtin.include_tasks: install-zip.yml
+      when: vgpu_driver_url[-3:] == "zip"
 
-    - name: Find .run script
-      ansible.builtin.find:
-        paths: "{{ dir_path }}/Host_Drivers"
-        patterns: "*.run"
-      register: find_result
-
-    - name: Set execute bit
-      ansible.builtin.file:
-        path: "{{ install_script }}"
-        mode: u+x
-
-    - name: Run the install script
-      # NOTE: This compiles for currently running kernel, can force with --kernel-name
-      ansible.builtin.shell: |-
-        {{ install_script }} -q {% if vgpu_driver_dkms %}--dkms{% endif %} --tmpdir {{ tmp_path }} --ui none --disable-nouveau --no-nouveau-check && touch {{ install_script }}.complete
-      args:
-        creates: "{{ omit if vgpu_driver_force_install else install_script ~ '.complete' }}"
-      environment:
-        TMPDIR: "{{ tmp_path }}"
-      register: install_result
+    - name: Intall a .deb
+      ansible.builtin.include_tasks: install-deb.yml
+      when: vgpu_driver_url[-3:] == "deb"
 
     - name: Reboot after driver install # noqa: no-handler
       ansible.builtin.reboot:
