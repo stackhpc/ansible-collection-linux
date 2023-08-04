@@ -4,13 +4,14 @@
    src: "{{ vgpu_driver_url_components.path }}"
    dest: "{{ dir_path }}"
    mode: "0660"
+  register: copy_result
   vars:
    is_file: "{{ 'file' in vgpu_driver_url_components.scheme }}"
   when: is_file
 
 - name: Install using apt
   ansible.builtin.apt:
-   deb: "{{ dir_path if is_file else vgpu_driver_url }}"
+   deb: "{{ copy_result.dest if is_file else vgpu_driver_url }}"
    state: present
   register: install_result
   vars:
