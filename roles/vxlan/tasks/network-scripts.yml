@@ -1,21 +1,21 @@
 ---
 - name: Ensure that the `network-scripts` package is installed
   ansible.builtin.package:
-    name: "network-scripts"
+    name: network-scripts
     state: present
   become: true
 
 - name: Ensure that the `network` service has been selected over `NetworkManager`
   ansible.builtin.service:
-    name: "network"
+    name: network
     enabled: true
   become: true
 
 - name: Ensure the interface scripts are present within `/etc/sysconfig/network-scripts/`
   ansible.builtin.copy:
-    src: "files/{{ item }}"
-    dest: "/etc/sysconfig/network-scripts/{{ item }}"
-    mode: "+x"
+    src: files/{{ item }}
+    dest: /etc/sysconfig/network-scripts/{{ item }}
+    mode: +x
   with_items:
     - ifup-vxlan
     - ifdown-vxlan
@@ -23,8 +23,8 @@
 
 - name: Ensure the `VXLAN` configuration is present within `/etc/sysconfig/network-scripts/`
   ansible.builtin.template:
-    src: "templates/ifcfg-vxlan.j2"
-    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.device }}"
+    src: templates/ifcfg-vxlan.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-{{ item.device }}
     mode: "0644"
   with_items: "{{ vxlan_interfaces }}"
   become: true

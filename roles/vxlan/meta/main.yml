@@ -1,3 +1,4 @@
+---
 galaxy_info:
   role_name: vxlan
   author: Jack Hodgkiss
@@ -9,7 +10,7 @@ galaxy_info:
   min_ansible_version: "2.1"
 
   platforms:
-    - name: "EL"
+    - name: EL
       versions:
         - "8"
 
