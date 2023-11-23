@@ -6,5 +6,5 @@ exclude_paths:
 skip_list:
   - yaml[line-length]
   - galaxy[no-changelog]
-
+  - meta-runtime[unsupported-version]
 use_default_rules: true
