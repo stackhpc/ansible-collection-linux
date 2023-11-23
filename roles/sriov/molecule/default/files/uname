@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # MFT compile depends on detection of kernel version and architecture
 
