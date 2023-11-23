@@ -7,6 +7,6 @@ vxlan_bootproto: none
 vxlan_onboot: "yes"
 
 vxlan_interfaces: []
-force_nm: false
-force_ns: false
-force_sd: false
+force_nm: false # noqa: var-naming[no-role-prefix]
+force_ns: false # noqa: var-naming[no-role-prefix]
+force_sd: false # noqa: var-naming[no-role-prefix]
