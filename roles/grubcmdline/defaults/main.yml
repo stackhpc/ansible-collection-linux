@@ -1,11 +1,11 @@
 ---
 # list of parameters to add to the kernel cmdline
-kernel_cmdline: []
+kernel_cmdline: [] # noqa var-naming[no-role-prefix]
 # list of regexs to match against kernel paramerters. Any matches will be
 # removed.
-kernel_cmdline_remove: []
-kernel_restart_handler: reboot
+kernel_cmdline_remove: [] # noqa var-naming[no-role-prefix]
+kernel_restart_handler: reboot # noqa var-naming[no-role-prefix]
 
 # optionally skip backing up the config file. Can cause issues on some
 # filesystems due to filenames containing illegal characters
-backup_grub_config_file: true
+backup_grub_config_file: true # noqa var-naming[no-role-prefix]
