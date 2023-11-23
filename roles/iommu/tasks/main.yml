@@ -3,7 +3,7 @@
   ansible.builtin.include_role:
     name: stackhpc.linux.grubcmdline
   vars:
-    kernel_cmdline: # noqa: var-naming[no-role-prefix]
+    kernel_cmdline:  # noqa: var-naming[no-role-prefix]
       - intel_iommu=on
     kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
