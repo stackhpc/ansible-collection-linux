@@ -1,0 +1,17 @@
+---
+
+- hosts: all
+  tasks:
+    - name: Install kernel packages
+      package:
+        name:
+          - kernel
+          - kernel-devel
+        state: present
+    - name: replace uname to fix detection of kernel and architecture in docker
+      copy:
+        src: files/uname
+        dest: /bin/uname
+        owner: root
+        group: root
+        mode: 0755

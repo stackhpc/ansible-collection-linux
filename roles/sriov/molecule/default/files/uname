@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# MFT compile depends on detection of kernel version and architecture
+
+if [ $1 = "-m" ]; then
+    echo "x86_64"
+else
+    for f in /usr/src/kernels/*; do
+        echo $(basename $f)
+        break
+    done
+fi

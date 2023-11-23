@@ -1,0 +1,73 @@
+---
+
+- name: Install MFT dependencies
+  yum:
+    name: "{{ sriov_os_pkgs }}"
+  become: true
+  when: sriov_install_enabled
+
+- name: Make working directory
+  file:
+    state: directory
+    path: "{{ sriov_workdir }}"
+  when: sriov_install_enabled
+
+- name: Download MFT
+  vars:
+    # Strip the file extension
+    no_ext: "{{ (sriov_mft_tarball | splitext)[0] }}"
+  unarchive:
+    src: "{{ sriov_mft_url }}"
+    dest: "{{ sriov_workdir }}"
+    remote_src: true
+    creates: "{{ sriov_workdir }}/{{ no_ext }}"
+  when: sriov_install_enabled
+
+- name: Determine if we can run mst_status
+  command: mst status
+  become: true
+  failed_when: false
+  changed_when: false
+  register: mst_status_result
+
+- name: Install MFT
+  command: "{{ sriov_workdir }}/{{ no_ext }}/install.sh"
+  vars:
+    # Strip the file extension
+    no_ext: "{{ (sriov_mft_tarball | splitext)[0] }}"
+  become: true
+  register: mft_install_result
+  when:
+    - sriov_install_enabled
+    - mst_status_result.rc != 0
+
+- name: "Run: mst start"
+  command: mst start
+  become: true
+  tags:
+    - skip_ansible_lint
+    - skip_when_testing
+  when: mft_install_result.changed
+
+- name: Check current settings
+  command: mlxconfig -d {{ pci_addr }} q
+  register: mlxconfig_result
+  become: true
+  changed_when: false
+
+- name: Enable SR-IOV with mlxconfig
+  command: mlxconfig -y -d {{ pci_addr }} set SRIOV_EN=1
+  become: true
+  vars:
+    sriov_enabled: "{{ mlxconfig_result.stdout | regex_search('^.*SRIOV_EN.*True.*$', multiline=True) }}"
+  when: not sriov_enabled
+  notify: "{{ sriov_restart_handler }}"
+
+- name: Set numvfs with mlxconfig
+  command: mlxconfig -y -d {{ pci_addr }} set NUM_OF_VFS={{ sriov_numvfs }}
+  become: true
+  vars:
+    regex: '^.*NUM_OF_VFS.*?{{ sriov_numvfs }}.*$'
+    num_of_vfs: "{{ mlxconfig_result.stdout | regex_search(regex, multiline=True) }}"
+  when: not num_of_vfs
+  notify: "{{ sriov_restart_handler }}"

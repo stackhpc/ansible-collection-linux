@@ -1,0 +1,4 @@
+skip_list:
+  # Can't skip linting on a multiline block, see:
+  # https://github.com/ansible/ansible-lint/issues/557
+  - '204'
