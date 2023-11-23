@@ -2,23 +2,23 @@
 galaxy_info:
   role_name: systemd_networkd
   namespace: stackhpc
-  author: "Anthony Ruhier & StackHPC Ltd"
+  author: Anthony Ruhier & StackHPC Ltd
   description: Configures systemd-networkd
   license: BSD
   min_ansible_version: "2.5"
   platforms:
-  - name: EL
-    versions:
-    - all
-  - name: Fedora
-    versions:
-    - all
-  - name: Ubuntu
-    versions:
-    - all
-  - name: Debian
-    versions:
-    - all
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
   galaxy_tags:
-  - networking
+    - networking
 dependencies: []
