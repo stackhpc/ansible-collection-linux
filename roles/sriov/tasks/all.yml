@@ -1,4 +1,6 @@
 ---
+- name: Include config tasks
+  ansible.builtin.include_tasks: config.yml
 
-- include_tasks: config.yml
-- include_tasks: mellanox.yml
+- name: Include mellanox tasks
+  ansible.builtin.include_tasks: mellanox.yml

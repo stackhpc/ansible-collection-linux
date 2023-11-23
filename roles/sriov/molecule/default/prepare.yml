@@ -1,17 +1,17 @@
 ---
-
-- hosts: all
+- name: Install kernel packages and replace uname
+  hosts: all
   tasks:
     - name: Install kernel packages
-      package:
+      ansible.builtin.package:
         name:
           - kernel
           - kernel-devel
         state: present
-    - name: replace uname to fix detection of kernel and architecture in docker
-      copy:
+    - name: Replace uname to fix detection of kernel and architecture in docker
+      ansible.builtin.copy:
         src: files/uname
         dest: /bin/uname
         owner: root
         group: root
-        mode: 0755
+        mode: "0755"

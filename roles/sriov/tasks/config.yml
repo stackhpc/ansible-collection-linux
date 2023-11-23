@@ -1,15 +1,15 @@
 ---
 - name: Persist sriov_numvfs with udev rule
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ sriov_udev_rule_path }}"
     block: |
-      {% for device in sriov_devices  %}
+      {% for device in sriov_devices %}
       {% if device.on_boot_configuration_enabled | default(true) | bool %}
       SUBSYSTEM=="net", ACTION=="add", KERNEL=="{{ device.name }}", RUN+="/usr/bin/sh -c 'echo {{ device.numvfs | default(sriov_numvfs) }} > /sys/class/net/{{ device.name }}/device/sriov_numvfs'"
       {% endif %}
       {% endfor %}
     marker_begin: BEGIN SRIOV
-    mode: 0644
+    mode: "0644"
     owner: root
     group: root
     create: true
@@ -17,24 +17,24 @@
   notify: "{{ sriov_restart_handler }}"
 
 - name: Add iommu to kernel command line (Intel)
-  include_role:
+  ansible.builtin.include_role:
     name: stackhpc.grubcmdline
   tags: skip_when_testing
   vars:
-    kernel_cmdline:
+    kernel_cmdline: # noqa var-naming[no-role-prefix]
       - intel_iommu=on
-    kernel_cmdline_remove:
+    kernel_cmdline_remove: # noqa var-naming[no-role-prefix]
       - ^intel_iommu=
     kernel_restart_handler: "{{ sriov_restart_handler }}"
   when: "'Intel' in ansible_facts.processor.0"
 
 - name: Set iommu=pt
-  include_role:
+  ansible.builtin.include_role:
     name: stackhpc.grubcmdline
   tags: skip_when_testing
   vars:
-    kernel_cmdline:
+    kernel_cmdline: # noqa var-naming[no-role-prefix]
       - iommu=pt
-    kernel_cmdline_remove:
+    kernel_cmdline_remove: # noqa var-naming[no-role-prefix]
       - ^iommu=
     kernel_restart_handler: "{{ sriov_restart_handler }}"

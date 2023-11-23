@@ -1,29 +1,28 @@
 ---
-
 - name: Determine list of pci addresses
-  command: grep PCI_SLOT_NAME /sys/class/net/{{ item }}/device/uevent
+  ansible.builtin.command: grep PCI_SLOT_NAME /sys/class/net/{{ item }}/device/uevent
   become: true
   with_items: "{{ sriov_devices | map(attribute='name') | list }}"
   register: network_devices
   changed_when: false
 
 - name: Set default value for sriov_pci_addrs
-  set_fact:
+  ansible.builtin.set_fact:
     sriov_pci_addrs: []
 
-- name: set_fact containing list of pci_address
-  set_fact:
+- name: Add set_fact containing list of pci_address
+  ansible.builtin.set_fact:
     sriov_pci_addrs: "{{ sriov_pci_addrs + [pci_addr] }}"
   vars:
     pci_addr: "{{ item.stdout | regex_replace('^PCI_SLOT_NAME=', '') }}"
   with_items: "{{ network_devices.results }}"
 
-- name: "Display sriov_pci_addrs value"
-  debug:
+- name: Display sriov_pci_addrs value
+  ansible.builtin.debug:
     var: sriov_pci_addrs
 
 - name: Determine list of vendor ids
-  slurp:
+  ansible.builtin.slurp:
     src: /sys/class/net/{{ item }}/device/vendor
   become: true
   with_items: "{{ sriov_devices | map(attribute='name') | list }}"
@@ -31,16 +30,16 @@
   changed_when: false
 
 - name: Set default value for sriov_pci_addrs
-  set_fact:
-    device_meta: "{{ sriov_devices | map(attribute='name')
-      | zip(vendors.results | map(attribute='content') | map ('b64decode') | map('trim'), sriov_pci_addrs, sriov_devices | map(attribute='numvfs', default=sriov_numvfs))
-      | list }}"
+  ansible.builtin.set_fact:
+    device_meta: "{{ sriov_devices | map(attribute='name') | zip(vendors.results | map(attribute='content') | map('b64decode') | map('trim'), sriov_pci_addrs, sriov_devices
+      | map(attribute='numvfs', default=sriov_numvfs)) | list }}"
 
-- debug:
+- name: Display device_meta variable
+  ansible.builtin.debug:
     var: device_meta
 
-- include_tasks: mlxconfig.yml
-  # e.g item=(u'enp3s0f1', u'0x15b3', u'0000:03:00.1', 31)
+- name: Include tasks in mlxconfig.yml
+  ansible.builtin.include_tasks: mlxconfig.yml
   vars:
     pci_addr: "{{ item[2] }}"
     sriov_numvfs: "{{ item[3] }}"

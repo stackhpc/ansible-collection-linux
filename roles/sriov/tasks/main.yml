@@ -1,2 +1,3 @@
 ---
-- include: "{{ sriov_action | default('all') }}.yml"
+- name: Include action tasks
+  ansible.builtin._include: "{{ sriov_action | default('all') }}.yml"

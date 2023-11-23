@@ -1,8 +1,7 @@
 ---
 # List of NICs to configure
 sriov_devices: []
-
-sriov_workdir: "{{ ansible_facts.env.HOME}}/.sriov"
+sriov_workdir: "{{ ansible_facts.env.HOME }}/.sriov"
 
 sriov_mft_url: https://www.mellanox.com/downloads/MFT/mft-4.23.0-104-x86_64-rpm.tgz
 
@@ -18,7 +17,7 @@ sriov_os_pkgs:
   - kernel-devel
   - make
 
-sriov_restart_handler: "reboot"
+sriov_restart_handler: reboot
 
 sriov_numvfs: 8
 
