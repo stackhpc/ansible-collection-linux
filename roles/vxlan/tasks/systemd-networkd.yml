@@ -1,0 +1,28 @@
+---
+- name: Ensure systemd-networkd vxlan .netdev files exist
+  ansible.builtin.template:
+    src: "templates/systemd-networkd-vxlan.netdev.j2"
+    dest: /etc/systemd/network/{{ item.device }}.netdev
+  with_items: "{{ vxlan_interfaces }}"
+  become: true
+
+- name: Ensure systemd-networkd drop-in directory exists
+  ansible.builtin.file:
+    path: /etc/systemd/network/50-kayobe-{{ item.phys_dev | default(vxlan_phys_dev) }}.network.d
+    state: directory
+    mode: "0755"
+  with_items: "{{ vxlan_interfaces }}"
+  become: true
+
+- name: Ensure systemd-networkd drop-in config file exists
+  ansible.builtin.template:
+    src: "templates/systemd-networkd-vxlan-drop-in.conf.j2"
+    dest: /etc/systemd/network/50-kayobe-{{ item.phys_dev | default(vxlan_phys_dev) }}.network.d/10-{{ item.device }}.conf
+  with_items: "{{ vxlan_interfaces }}"
+  become: true
+
+- name: Restart systemd-networkd
+  systemd:
+    state: restarted
+    name: systemd-networkd
+  become: true

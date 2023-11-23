@@ -1,0 +1,21 @@
+galaxy_info:
+  role_name: vxlan
+  author: Jack Hodgkiss
+  description: Create persistent VXLAN interfaces with the use of Network Scripts
+  company: StackHPC
+
+  license: Apache License 2.0
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: "EL"
+      versions:
+        - "8"
+
+  galaxy_tags:
+    - networkscripts
+    - vxlan
+    - networking
+
+dependencies: []

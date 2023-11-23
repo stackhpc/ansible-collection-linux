@@ -1,0 +1,25 @@
+#!/bin/bash
+
+. /etc/init.d/functions
+
+cd /etc/sysconfig/network-scripts
+. ./network-functions
+
+[ -f ../network ] && . ../network
+
+CONFIG=${1}
+
+need_config ${CONFIG}
+
+source_config
+
+if ! ip link show dev ${DEVICE} >/dev/null 2>&1 ; then
+    echo "Creating vxlan ${DEVICE} - VNI: ${VNI}, IP Address: ${IPADDR}/${PREFIX}"
+    ip link add ${DEVICE} type vxlan id ${VNI} group ${GROUP} ttl ${TTL} dev ${PHYS_DEV} dstport ${DSTPORT}
+    if [[ $? -ne 0 ]]; then
+        echo "Failed creating vxlan"
+        exit 1
+    fi
+fi
+
+/etc/sysconfig/network-scripts/ifup-eth ${DEVICE}

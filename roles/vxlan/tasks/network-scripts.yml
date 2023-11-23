@@ -1,0 +1,45 @@
+---
+- name: Ensure that the `network-scripts` package is installed
+  ansible.builtin.package:
+    name: "network-scripts"
+    state: present
+  become: true
+
+- name: Ensure that the `network` service has been selected over `NetworkManager`
+  ansible.builtin.service:
+    name: "network"
+    enabled: true
+  become: true
+
+- name: Ensure the interface scripts are present within `/etc/sysconfig/network-scripts/`
+  ansible.builtin.copy:
+    src: "files/{{ item }}"
+    dest: "/etc/sysconfig/network-scripts/{{ item }}"
+    mode: "+x"
+  with_items:
+    - ifup-vxlan
+    - ifdown-vxlan
+  become: true
+
+- name: Ensure the `VXLAN` configuration is present within `/etc/sysconfig/network-scripts/`
+  ansible.builtin.template:
+    src: "templates/ifcfg-vxlan.j2"
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.device }}"
+    mode: "0644"
+  with_items: "{{ vxlan_interfaces }}"
+  become: true
+
+- name: Bounce network interfaces
+  ansible.builtin.command: >
+    nohup bash -c "
+    returncode=0
+    ifdown {{ item.device }};
+    if ! ifup {{ item.device }}; then
+      echo \"Encountered an error attempting to bring up interface: {{ item.device }}\";
+      returncode=1
+    fi;
+    exit $returncode
+    "
+  with_items: "{{ vxlan_interfaces }}"
+  changed_when: true
+  become: true

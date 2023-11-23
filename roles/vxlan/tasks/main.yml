@@ -1,0 +1,24 @@
+---
+- name: Check that force_nm and force_ns do not conflict
+  assert:
+    that:
+      - not (force_nm and force_ns)
+    fail_msg: "force_nm and force_ns are mutually exclusive. They cannot both be true"
+
+- name: Ensure the `network-scripts` package is installed if it is available
+  ansible.builtin.package:
+    name: "network-scripts"
+    state: present
+  become: true
+  register: install_result
+  ignore_errors: true
+  when: not force_nm
+
+- include_tasks: network-scripts.yml
+  when: (not install_result.failed) or force_ns
+
+- include_tasks: networkmanager.yml
+  when: (install_result.failed and ansible_facts['distribution'] == "Rocky") or force_nm
+
+- include_tasks: systemd-networkd.yml
+  when: (install_result.failed and ansible_facts['distribution'] == "Ubuntu") or force_sd
