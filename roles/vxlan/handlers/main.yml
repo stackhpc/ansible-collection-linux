@@ -1,0 +1,17 @@
+---
+- name: Reload network config
+  ansible.builtin.command: nmcli connection reload
+  become: true
+  changed_when: true
+
+- name: Ensure network interfaces are down
+  ansible.builtin.command: nmcli connection down vxlan{{ item.item.vni | default(vxlan_vni) }}
+  become: true
+  with_items: "{{ result.results }}"
+  changed_when: true
+
+- name: Ensure network interfaces are up
+  ansible.builtin.command: nmcli connection up vxlan{{ item.item.vni | default(vxlan_vni) }}
+  become: true
+  with_items: "{{ result.results }}"
+  changed_when: true

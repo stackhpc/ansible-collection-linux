@@ -1,0 +1,9 @@
+[NetDev]
+Name={{ item.device }}
+Kind=vxlan
+
+[VXLAN]
+VNI={{ item.vni | default(vxlan_vni) }}
+Group={{ item.group }}
+TTL={{ item.ttl | default(vxlan_ttl) }}
+DestinationPort={{ item.dstport | default(vxlan_dstport) }}

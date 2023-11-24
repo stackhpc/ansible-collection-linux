@@ -1,0 +1,25 @@
+[connection]
+id=vxlan{{ item.vni | default(vxlan_vni) }}
+type=vxlan
+interface-name={{ item.device }}
+autoconnect={{ vxlan_onboot }}
+{% if item.bridge is defined %}
+master={{ item.bridge }}
+slave-type=bridge
+{% endif %}
+
+[vxlan]
+destination-port={{ item.dstport | default(vxlan_dstport) }}
+id={{ item.vni | default(vxlan_vni) }}
+parent={{ item.phys_dev | default(vxlan_phys_dev) }}
+remote={{ item.group }}
+ttl={{ item.ttl | default(vxlan_ttl) }}
+
+[ipv4]
+method=disabled
+
+[ipv6]
+addr-gen-mode=default
+method=disabled
+
+[proxy]

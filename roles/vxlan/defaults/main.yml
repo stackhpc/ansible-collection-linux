@@ -1,0 +1,12 @@
+---
+vxlan_vni: 42
+vxlan_ttl: 10
+vxlan_phys_dev: eth0
+vxlan_dstport: 4790
+vxlan_bootproto: none
+vxlan_onboot: "yes"
+
+vxlan_interfaces: []
+force_nm: false # noqa: var-naming[no-role-prefix]
+force_ns: false # noqa: var-naming[no-role-prefix]
+force_sd: false # noqa: var-naming[no-role-prefix]

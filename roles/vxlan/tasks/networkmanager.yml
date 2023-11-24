@@ -1,0 +1,13 @@
+---
+- name: Ensure the `VXLAN` configuration is present within `/etc/NetworkManager/system-connections`
+  ansible.builtin.template:
+    src: templates/nmconnection-vxlan.j2
+    dest: /etc/NetworkManager/system-connections/vxlan{{ item.vni | default(vxlan_vni) }}.nmconnection
+    mode: "0600"
+  with_items: "{{ vxlan_interfaces }}"
+  become: true
+  register: result
+  notify:
+    - Reload network config
+    - Ensure network interfaces are down
+    - Ensure network interfaces are up
