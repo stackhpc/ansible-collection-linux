@@ -37,8 +37,7 @@
     no_ext: "{{ (sriov_mft_tarball | splitext)[0] }}"
   become: true
   register: mft_install_result
-  changed_when: mft_install_result.rc == 0
-
+  changed_when: true
   when:
     - sriov_install_enabled
     - mst_status_result.rc != 0
