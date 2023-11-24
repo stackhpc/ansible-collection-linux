@@ -1,0 +1,47 @@
+---
+- name: Determine list of pci addresses
+  ansible.builtin.command: grep PCI_SLOT_NAME /sys/class/net/{{ item }}/device/uevent
+  become: true
+  with_items: "{{ sriov_devices | map(attribute='name') | list }}"
+  register: network_devices
+  changed_when: false
+
+- name: Set default value for sriov_pci_addrs
+  ansible.builtin.set_fact:
+    sriov_pci_addrs: []
+
+- name: Add set_fact containing list of pci_address
+  ansible.builtin.set_fact:
+    sriov_pci_addrs: "{{ sriov_pci_addrs + [pci_addr] }}"
+  vars:
+    pci_addr: "{{ item.stdout | regex_replace('^PCI_SLOT_NAME=', '') }}"
+  with_items: "{{ network_devices.results }}"
+
+- name: Display sriov_pci_addrs value
+  ansible.builtin.debug:
+    var: sriov_pci_addrs
+
+- name: Determine list of vendor ids
+  ansible.builtin.slurp:
+    src: /sys/class/net/{{ item }}/device/vendor
+  become: true
+  with_items: "{{ sriov_devices | map(attribute='name') | list }}"
+  register: vendors
+  changed_when: false
+
+- name: Set default value for sriov_pci_addrs
+  ansible.builtin.set_fact:
+    device_meta: "{{ sriov_devices | map(attribute='name') | zip(vendors.results | map(attribute='content') | map('b64decode') | map('trim'), sriov_pci_addrs, sriov_devices
+      | map(attribute='numvfs', default=sriov_numvfs)) | list }}"
+
+- name: Display device_meta variable
+  ansible.builtin.debug:
+    var: device_meta
+
+- name: Include tasks in mlxconfig.yml
+  ansible.builtin.include_tasks: mlxconfig.yml
+  vars:
+    pci_addr: "{{ item[2] }}"
+    sriov_numvfs: "{{ item[3] }}"
+  loop: "{{ device_meta }}"
+  when: item[1] in sriov_mellanox_vendor_ids

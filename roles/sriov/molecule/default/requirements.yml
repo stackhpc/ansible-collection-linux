@@ -1,0 +1,3 @@
+---
+- src: git+https://github.com/stackhpc/ansible-role-grubcmdline
+  name: stackhpc.grubcmdline

@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: sriov
+  handlers:
+    - name: Simulate reboot
+      listen: reboot
+      ansible.builtin.debug:
+        msg: Simulating reboot
