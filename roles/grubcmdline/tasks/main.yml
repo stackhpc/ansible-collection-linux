@@ -1,4 +1,3 @@
----
 - name: Check current kernel command line args
   ansible.builtin.command: cat /proc/cmdline
   register: result
@@ -23,9 +22,7 @@
 - name: Set fact containing GRUB_CMDLINE_LINUX_DEFAULT
   ansible.builtin.set_fact:
     grub_cmdline_linux_default: >-
-      {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX_DEFAULT.*$', multiline=True)
-      | regex_replace('^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$', '\1') }}
-
+      {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX_DEFAULT.*$', multiline=True) | regex_replace('^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$', '\1') }} #magic___^_^___line
 - name: Display GRUB_CMDLINE_DEFAULT
   ansible.builtin.debug:
     var: grub_cmdline_linux_default
@@ -42,7 +39,7 @@
 
 - name: Updated kernel cmd line params
   ansible.builtin.set_fact:
-    grub_cmdline_linux_new: "{{ grub_cmdline_linux_default.split() | difference(grub_cmdline_linux_remove) + kernel_cmdline }}"
+    grub_cmdline_linux_new: "{{ grub_cmdline_linux_default.split() | difference(grub_cmdline_linux_remove) + kernel_cmdline | select() }}"
 
 - name: Display newly computed GRUB_CMDLINE_DEFAULT
   ansible.builtin.debug:
