@@ -11,7 +11,7 @@
 - name: Notify reboot handler
   ansible.builtin.debug:
     msg: Old command line was {{ result.stdout }}
-  changed_when: old_cmdline != kernel_cmdline | sort | list
+  changed_when: old_cmdline != kernel_cmdline | select() | sort | list
   notify: "{{ kernel_restart_handler }}"
 
 - name: Slurp /etc/default/grub
