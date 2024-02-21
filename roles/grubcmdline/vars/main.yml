@@ -1,6 +1,6 @@
 ---
 # Should match on all of the the cmd line parameters
-kernel_cmdline_regex: "{{ '(' ~ kernel_cmdline | map('regex_escape') | list | join('|') ~ ')' }}" # noqa var-naming[no-role-prefix]
+kernel_cmdline_regex: "{{ '(' ~ kernel_cmdline | select() | map('regex_escape') | list | join('|') ~ ')' }}" # noqa var-naming[no-role-prefix]
 
 kernel_cmdline_sorted: "{{ kernel_cmdline | sort }}" # noqa var-naming[no-role-prefix]
 
