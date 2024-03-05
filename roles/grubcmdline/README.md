@@ -1,4 +1,4 @@
-stackhpc.grubcmdline
+stackhpc.linux.grubcmdline
 ====================
 
 Sets the default kernel command line
@@ -34,7 +34,7 @@ Example Playbook
       - hugepage
   tasks:
     - include_role:
-        name: stackhpc.grubcmdline
+        name: stackhpc.linux.grubcmdline
   handlers:
     - name: reboot
       include_tasks: tasks/reboot.yml
