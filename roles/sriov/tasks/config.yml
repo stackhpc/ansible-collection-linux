@@ -18,7 +18,7 @@
 
 - name: Add iommu to kernel command line (Intel)
   ansible.builtin.include_role:
-    name: stackhpc.grubcmdline
+    name: stackhpc.linux.grubcmdline
   tags: skip_when_testing
   vars:
     kernel_cmdline: # noqa var-naming[no-role-prefix]
@@ -30,7 +30,7 @@
 
 - name: Set iommu=pt
   ansible.builtin.include_role:
-    name: stackhpc.grubcmdline
+    name: stackhpc.linux.grubcmdline
   tags: skip_when_testing
   vars:
     kernel_cmdline: # noqa var-naming[no-role-prefix]

@@ -1,4 +1,4 @@
-stackhpc.sriov
+stackhpc.linux.sriov
 ==============
 
 [![Build Status](https://travis-ci.com/stackhpc/ansible-role-sriov.svg?branch=master)](https://travis-ci.com/stackhpc/ansible-role-sriov)
@@ -17,7 +17,7 @@ See `defaults/main.yml`
 Dependencies
 ------------
 
-- `stackhpc.grubcmdline`
+- `stackhpc.linux.grubcmdline`
 
 Example Playbook
 ----------------
