@@ -53,6 +53,7 @@
     line: GRUB_CMDLINE_LINUX_DEFAULT="{{ grub_cmdline_linux_new | join(' ') }}"
     backup: "{{ backup_grub_config_file }}"
   become: true
+  when: grub_cmdline_linux_default.split() | sort | list != grub_cmdline_linux_new | sort | list
 
 - name: Generate new grub-config (RedHat <= 8.x)
   ansible.builtin.command: grub2-mkconfig
