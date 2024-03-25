@@ -3,6 +3,7 @@
   ansible.builtin.command: cat /proc/cmdline
   register: result
   changed_when: false
+  check_mode: false
 
 - name: Determine if we need to update
   ansible.builtin.set_fact:
