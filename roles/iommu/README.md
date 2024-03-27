@@ -20,3 +20,19 @@
       become: true
 
 ```
+
+Or if you want the node to reboot automatically
+
+```
+---
+- name: Enable IOMMU
+  hosts: iommu
+  tasks:
+    - import_role:
+      name: stackhpc.linux.iommu
+  handlers:
+    - name: reboot
+      reboot:
+      become: true
+
+```
