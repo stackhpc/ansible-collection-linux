@@ -9,3 +9,6 @@ kernel_restart_handler: reboot # noqa var-naming[no-role-prefix]
 # optionally skip backing up the config file. Can cause issues on some
 # filesystems due to filenames containing illegal characters
 backup_grub_config_file: true # noqa var-naming[no-role-prefix]
+
+default_grub_conf: "/etc/default/grub"
+cloudinit_grub_conf: "/etc/default/grub.d/50-cloudimg-settings.cfg"
