@@ -10,5 +10,5 @@ kernel_restart_handler: reboot # noqa var-naming[no-role-prefix]
 # filesystems due to filenames containing illegal characters
 backup_grub_config_file: true # noqa var-naming[no-role-prefix]
 
-default_grub_conf: "/etc/default/grub"
-cloudinit_grub_conf: "/etc/default/grub.d/50-cloudimg-settings.cfg"
+default_grub_conf: "/etc/default/grub" # noqa var-naming[no-role-prefix]
+cloudinit_grub_conf: "/etc/default/grub.d/50-cloudimg-settings.cfg" # noqa var-naming[no-role-prefix]
