@@ -1,13 +1,44 @@
 ---
+- name: Template dracut config for vfio
+  ansible.builtin.blockinfile:
+    path: /etc/dracut.conf.d/gpu-vfio.conf
+    block: |
+      add_drivers+="vfio vfio_iommu_type1 vfio_pci vfio_virqfd"
+    owner: root
+    group: root
+    mode: "0660"
+    create: true
+  become: true
+  when: iommu_vfio_pci_ids is defined
+  notify:
+    - Regenerate initramfs
+    - reboot
+
+- name: Add vfio to modules-load.d
+  ansible.builtin.blockinfile:
+    path: /etc/modules-load.d/vfio.conf
+    block: |
+      vfio
+      vfio_iommu_type1
+      vfio_pci
+      vfio_virqfd
+    owner: root
+    group: root
+    mode: "0664"
+    create: true
+  become: true
+  when: iommu_vfio_pci_ids is defined
+  notify: reboot
+
 - name: Add iommu to kernel command line (Intel)
   ansible.builtin.include_role:
     name: stackhpc.linux.grubcmdline
   vars:
-    kernel_cmdline: # noqa: var-naming[no-role-prefix]
-      - intel_iommu=on
+    kernel_cmdline: "{{ ['intel_iommu=on'] + (['vfio-pci.ids=' + iommu_vfio_pci_ids] if iommu_vfio_pci_ids is defined else []) }}"  # noqa: var-naming[no-role-prefix]
     kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
-  when: "'Intel' in ansible_facts.processor.0"
+      - ^vfio-pci\.ids=
+  when: ansible_facts.processor | select('search', 'Intel') | list | length > 0
 
 - name: Set iommu=pt
   ansible.builtin.include_role:
