@@ -1,0 +1,8 @@
+---
+- name: Regenerate initramfs
+  ansible.builtin.shell: |-
+    #!/bin/bash
+    set -eux
+    dracut -v -f /boot/initramfs-$(uname -r).img $(uname -r)
+  become: true
+  changed_when: true
