@@ -34,11 +34,19 @@
   ansible.builtin.include_role:
     name: stackhpc.linux.grubcmdline
   vars:
-    kernel_cmdline: "{{ ['intel_iommu=on'] + (['vfio-pci.ids=' + iommu_vfio_pci_ids] if iommu_vfio_pci_ids is defined else []) }}"  # noqa: var-naming[no-role-prefix]
+    kernel_cmdline: "{{ ['intel_iommu=on'] }}"  # noqa: var-naming[no-role-prefix]
     kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
       - ^vfio-pci\.ids=
   when: ansible_facts.processor | select('search', 'Intel') | list | length > 0
+
+- name: Add vfio pci ids to kernel command line
+  ansible.builtin.include_role:
+    name: stackhpc.linux.grubcmdline
+  vars:
+    kernel_cmdline: "{{ ['vfio-pci.ids=' + iommu_vfio_pci_ids] if iommu_vfio_pci_ids is defined else [] }}"  # noqa: var-naming[no-role-prefix]
+    kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
+      - ^vfio-pci\.ids=
 
 - name: Set iommu=pt
   ansible.builtin.include_role:
