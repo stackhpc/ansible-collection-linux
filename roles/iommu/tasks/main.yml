@@ -7,7 +7,7 @@
       - intel_iommu=on
     kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
-  when: "'Intel' in ansible_facts.processor.0"
+  when: ansible_facts.processor | select('search','Intel')
 
 - name: Set iommu=pt
   ansible.builtin.include_role:
