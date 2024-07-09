@@ -9,7 +9,7 @@
     mode: "0660"
     create: true
   become: true
-  when: 
+  when:
     - iommu_vfio_pci_ids is defined
     - ansible_facts.os_family == 'Debian'
   notify:
