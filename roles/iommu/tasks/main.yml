@@ -39,8 +39,7 @@
     kernel_cmdline: "{{ ['intel_iommu=on'] }}"  # noqa: var-naming[no-role-prefix]
     kernel_cmdline_remove: # noqa: var-naming[no-role-prefix]
       - ^intel_iommu=
-      - ^vfio-pci\.ids=
-  when: ansible_facts.processor | select('search', 'Intel') | list | length > 0
+  when: ansible_facts.processor | select('search','Intel')
 
 - name: Add vfio pci ids to kernel command line
   ansible.builtin.include_role:
