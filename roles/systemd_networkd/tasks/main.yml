@@ -17,10 +17,19 @@
 
 - name: Enable systemd-networkd
   become: true
-  ansible.builtin.service:
-    name: systemd-networkd
-    enabled: true
   when: systemd_networkd_network or systemd_networkd_link or systemd_networkd_netdev
+  block:
+    # TODO(mattcrees): Remove once this gets into a versioned release:
+    # https://github.com/ansible/ansible/pull/77754
+    - name: Temporarily disable systemd-networkd
+      ansible.builtin.service:
+        name: systemd-networkd
+        enabled: false
+
+    - name: Enable systemd-networkd
+      ansible.builtin.service:
+        name: systemd-networkd
+        enabled: true
 
 - name: Start and enable systemd-resolved
   become: true
