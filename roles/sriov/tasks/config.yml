@@ -4,7 +4,7 @@
     path: "{{ sriov_udev_rule_path }}"
     block: |
       {% for device in sriov_devices %}
-      {% if device.on_boot_configuration_enabled | default(true) | bool %}
+      {% if device.on_boot_configuration_enabled | default(true) | bool and device.numvfs_driver | default(sriov_numvfs_driver) == 'udev' %}
       SUBSYSTEM=="net", ACTION=="add", KERNEL=="{{ device.name }}", RUN+="/usr/bin/sh -c 'echo {{ device.numvfs | default(sriov_numvfs) }} > /sys/class/net/{{ device.name }}/device/sriov_numvfs'"
       {% endif %}
       {% endfor %}
@@ -15,6 +15,33 @@
     create: true
   become: true
   notify: "{{ sriov_restart_handler }}"
+
+- name: Persist sriov_numvfs with systemd unit
+  template:
+    dest: "/etc/systemd/system/virtual-function-{{ device.name }}.service"
+    src: "{{ virtual-function.service.j2 }}"
+    mode: "0644"
+    owner: root
+    group: root
+    state: "{{ 'present' if device.on_boot_configuration_enabled | default(true) else 'absent' }}"
+  loop: "{{ sriov_devices }}"
+  loop_control:
+    loop_var: device
+  become: true
+  when: device.numvfs_driver | default(sriov_numvfs_driver) == 'systemd'
+
+- name: Enable sriov_numvfs systemd unit
+  systemd:
+    name: "virtual-function-{{ device.name }}.service"
+    enabled: true
+    daemon_reload: true
+  loop: "{{ sriov_devices }}"
+  loop_control:
+    loop_var: device
+  become: true
+  notify:
+    - "{{ sriov_restart_handler }}"
+  when: device.numvfs_driver | default(sriov_numvfs_driver) == 'systemd'
 
 - name: Add iommu to kernel command line (Intel)
   ansible.builtin.include_role:
