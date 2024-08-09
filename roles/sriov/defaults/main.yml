@@ -21,6 +21,13 @@ sriov_restart_handler: reboot
 
 sriov_numvfs: 8
 
+# One of: systemd, or udev. Default is 'systemd'.
+sriov_numvfs_driver: systemd
+# List of services that should wait until numvfs has been set. Only applicable
+# to the systemd numvfs driver.
+sriov_numvfs_required_by: []
+
+# Path to udev rules when using  srivov_numvfs_driver == 'udev'.
 sriov_udev_rule_path: /etc/udev/rules.d/70-sriov.rules
 
 sriov_mellanox_vendor_ids:

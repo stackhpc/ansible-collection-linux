@@ -1,0 +1,25 @@
+[Unit]
+Description=Adds virtual functions for {{ device.name }}
+Requires=sys-subsystem-net-devices-{{ device.name }}.device
+After=sys-subsystem-net-devices-{{ device.name }}.device
+Requires=network-pre.target
+Before=network-pre.target
+{% if ansible_facts.os_family == "Debian" %}
+Requires=systemd-networkd.service
+Before=systemd-networkd.service
+{% endif %}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sh -c 'echo {{ device.numvfs | default(sriov_numvfs) }} > /sys/class/net/{{ device.name }}/device/sriov_numvfs'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=network-pre.target
+{% if ansible_facts.os_family == "Debian" %}
+WantedBy=systemd-networkd.service
+{% endif %}
+{% set required_by = device.numvfs_required_by | default(sriov_numvfs_required_by) %}
+{% for item in required_by %}
+RequiredBy={{ item }}
+{% endfor %}
