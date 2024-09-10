@@ -26,9 +26,16 @@ Example Playbook
 - name: configure sr-iov
   hosts: compute
   vars:
+    # Use deprecated udev numvfs driver by default
+    sriov_numvfs_driver: udev
     sriov_devices:
       - name: p4p1
         numvfs: 63
+        # Per device override of sriov_numvfs_driver
+        numvfs_driver: systemd
+        # Do not start docker until virtual functions are loaded
+        numvfs_required_by:
+          - docker.service
       - name: p3p1
         numvfs: 8
         # Don't add a udev rule to set numvfs. This can be useful if you use an alternative method
