@@ -26,9 +26,23 @@
     grub_cmdline_linux_default: >-
       {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX_DEFAULT.*$', multiline=True) | regex_replace('^GRUB_CMDLINE_LINUX_DEFAULT="(.*)"$', '\1') }}
 
+- name: Set fact containing GRUB_CMDLINE_LINUX
+  ansible.builtin.set_fact:
+    grub_cmdline_linux: >-
+      {{ grub_result.content | b64decode | regex_search('^GRUB_CMDLINE_LINUX=.*$', multiline=True) | regex_replace('^GRUB_CMDLINE_LINUX="(.*)"$', '\1') }}
+
 - name: Display GRUB_CMDLINE_LINUX_DEFAULT
   ansible.builtin.debug:
     var: grub_cmdline_linux_default
+
+- name: Display GRUB_CMDLINE_LINUX
+  ansible.builtin.debug:
+    var: grub_cmdline_linux
+
+- name: Initialise GRUB_CMDLINE_LINUX_DEFAULT if unset
+  ansible.builtin.set_fact:
+    grub_cmdline_linux_default: "{{ grub_cmdline_linux }}"
+  when: grub_cmdline_linux_default == 'None'
 
 - name: Determine which parameters need removing
   # We use a regex here so you can remove parameters regardless of their value, e.g to remove iommu=on you
