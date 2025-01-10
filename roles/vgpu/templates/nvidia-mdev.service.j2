@@ -10,6 +10,8 @@ Requires=nvidia-sriov-{{ vgpu_definition.pci_address }}.service
 {% endif %}
 
 [Service]
+Restart=on-failure
+RestartSec=30
 Type=oneshot
 User=root
 ExecStartPre=/bin/sleep 5
