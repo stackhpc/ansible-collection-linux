@@ -4,15 +4,19 @@ Before=docker.service
 {% if vgpu_definition.mig_devices is defined %}
 After=nvidia-mig-manager.service
 Requires=nvidia-mig-manager.service
-{% else %}
-After=nvidia-sriov-{{ vgpu_definition.pci_address }}.service
-Requires=nvidia-sriov-{{ vgpu_definition.pci_address }}.service
 {% endif %}
 
 [Service]
+Restart=on-failure
+RestartSec=30
 Type=oneshot
 User=root
-ExecStartPre=/bin/sleep 5
+{% if vgpu_definition.mig_devices is not defined %}
+# Workaround lack of UpheldBy/RestartMode=direct in systemd<254 to ensure unit is
+# started when the dependency fails, see:
+# https://unix.stackexchange.com/questions/213185/restarting-systemd-service-on-dependency-failure
+ExecStartPre=/usr/bin/systemctl is-active nvidia-sriov-{{ vgpu_definition.pci_address }}.service
+{% endif %}
 ExecStart=-/usr/sbin/mdevctl start --uuid %i
 RemainAfterExit=yes
 

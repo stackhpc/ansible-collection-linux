@@ -6,12 +6,19 @@ After=local-fs.target {{ vgpu_systemd_device[vgpu_definition.pci_address] }}
 Wants={{ vgpu_systemd_device[vgpu_definition.pci_address] }}
 
 [Service]
+Restart=on-failure
+RestartSec=30
 Type=oneshot
 User=root
-# NOTE(wszumski): There is a race in the driver initialization where if we run this too early, then
-# the mdev_support_devices entry doesn't show up in sysfs. I was unable to get this to show up again
-# without a reboot.
+# NOTE(wszumski): There is a race in the driver initialization where if we run
+# this too early, then the mdev_support_devices entry doesn't show up in sysfs.
+# I was unable to get this to show up again without a reboot.
 ExecStartPre=/bin/sleep 5
+# NOTE(wszumski): The sriov-manage script will unbind the nvidia driver to
+# initialize the virtual functions.  If it fails part way through, the driver
+# can be left unbound, and subsequent executions of sriov-mange will fail. This
+# ensures that the nvidia driver is always bound before we run sriov-manage.
+ExecStart=/bin/bash -c "echo '{{ vgpu_definition.pci_address }}' > /sys/bus/pci/drivers/nvidia/bind || true"
 ExecStart=/usr/lib/nvidia/sriov-manage -e {{ vgpu_definition.pci_address }}
 RemainAfterExit=yes
 
