@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    Updates the sriov role to correctly install MFT dependencies when on a
+    Debian system.
