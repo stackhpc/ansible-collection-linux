@@ -7,7 +7,7 @@ sriov_mft_url: https://www.mellanox.com/downloads/MFT/mft-4.23.0-104-x86_64-rpm.
 
 sriov_mft_tarball: "{{ sriov_mft_url | urlsplit('path') | basename }}"
 
-sriov_os_pkgs:
+sriov_os_pkgs_rpm:
   - gcc
   - rpm-build
   # -E- Could not find lspci, you may need to install "pciutils" package
@@ -15,6 +15,15 @@ sriov_os_pkgs:
   # NOTE(wszumski): Assumes running latest kernel. We could include package version with
   # output of uname -r, but the packages aren't always available.
   - kernel-devel
+  - make
+
+sriov_os_pkgs_deb:
+  - gcc
+  # -E- Could not find lspci, you may need to install "pciutils" package
+  - pciutils
+  # NOTE(wszumski): Assumes running latest kernel. We could include package version with
+  # output of uname -r, but the packages aren't always available.
+  - linux-headers-generic
   - make
 
 sriov_restart_handler: reboot

@@ -1,7 +1,7 @@
 ---
 - name: Install MFT dependencies
-  ansible.builtin.yum:
-    name: "{{ sriov_os_pkgs }}"
+  ansible.builtin.package:
+    name: "{{ sriov_os_pkgs_rpm if ansible_facts.os_family == 'RedHat' else sriov_os_pkgs_deb }}"
   become: true
   when: sriov_install_enabled
 
