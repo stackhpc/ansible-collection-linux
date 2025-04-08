@@ -1,0 +1,4 @@
+---
+fixes:
+  - |
+    Fixes the sriov role to install MFT from the correct URL.

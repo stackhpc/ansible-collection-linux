@@ -3,7 +3,7 @@
 sriov_devices: []
 sriov_workdir: "{{ ansible_facts.env.HOME }}/.sriov"
 
-sriov_mft_url: https://www.mellanox.com/downloads/MFT/mft-4.23.0-104-x86_64-rpm.tgz
+sriov_mft_url: "{{ 'https://www.mellanox.com/downloads/MFT/mft-4.23.0-104-x86_64-rpm.tgz' if ansible_facts.os_family == 'RedHat' else 'https://www.mellanox.com/downloads/MFT/mft-4.30.1-113-x86_64-deb.tgz' }}"
 
 sriov_mft_tarball: "{{ sriov_mft_url | urlsplit('path') | basename }}"
 
