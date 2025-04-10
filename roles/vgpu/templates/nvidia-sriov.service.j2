@@ -13,7 +13,7 @@ User=root
 # NOTE(wszumski): There is a race in the driver initialization where if we run
 # this too early, then the mdev_support_devices entry doesn't show up in sysfs.
 # I was unable to get this to show up again without a reboot.
-ExecStartPre=/bin/sleep 5
+ExecStartPre=/bin/sleep 30
 # NOTE(wszumski): The sriov-manage script will unbind the nvidia driver to
 # initialize the virtual functions.  If it fails part way through, the driver
 # can be left unbound, and subsequent executions of sriov-mange will fail. This
