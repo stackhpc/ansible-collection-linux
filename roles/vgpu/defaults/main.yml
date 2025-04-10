@@ -5,7 +5,7 @@ vgpu_driver_dkms: false
 vgpu_do_reboot: true
 vgpu_reboot_timeout: 3600
 
-# Time in seconds to sleep before enabling sriov on 
+# Time in seconds to sleep before enabling sriov
 vgpu_sriov_init_delay: 30
 
 # Deprecated: use vgpu_definitions instead.
