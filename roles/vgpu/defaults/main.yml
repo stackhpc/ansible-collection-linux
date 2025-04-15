@@ -1,4 +1,7 @@
 ---
+# Whether to install the nvidia driver. Set to false if you want to install the driver
+# via some other means.
+vgpu_nvidia_driver_install_enabled: true
 vgpu_driver_url: ""
 vgpu_driver_force_install: false
 vgpu_driver_dkms: false
