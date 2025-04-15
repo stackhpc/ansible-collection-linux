@@ -72,6 +72,13 @@ vgpu_definitions:
           index: 0
         - mdev_type: nvidia-697
           index: 1
+    # Configuring a MIG without creating VGPUs. You may also want to set
+    # vgpu_nvidia_driver_install_enabled: false if you have installed the nvidia
+    # driver by some other means.
+    - pci_address: "0000:17:00.0"
+      mig_devices:
+        "1g.10gb": 1
+        "2g.20gb": 3
 ```
 
 
