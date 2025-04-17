@@ -12,6 +12,7 @@
 
 - name: Collect mig status
   ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} --query-gpu='mig.mode.current' --format csv,noheader
+  changed_when: false
   register: mig_status_result
   when:
     - vgpu_definition.mig_devices is defined
