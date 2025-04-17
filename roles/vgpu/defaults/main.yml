@@ -1,4 +1,7 @@
 ---
+# Whether to install the nvidia driver. Set to false if you want to install the driver
+# via some other means.
+vgpu_nvidia_driver_install_enabled: true
 vgpu_driver_url: ""
 vgpu_driver_force_install: false
 vgpu_driver_dkms: false
@@ -13,5 +16,5 @@ vgpu_mig_definitions: []
 vgpu_definitions: "{{ vgpu_mig_definitions }}"
 
 # Packages providing nvidia-mig-manager
-vgpu_nvidia_mig_manager_rpm_url: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager-0.5.1-1.x86_64.rpm
-vgpu_nvidia_mig_manager_deb_url: https://github.com/NVIDIA/mig-parted/releases/download/v0.5.1/nvidia-mig-manager_0.5.1-1_amd64.deb
+vgpu_nvidia_mig_manager_rpm_url: https://github.com/NVIDIA/mig-parted/releases/download/v0.12.1/nvidia-mig-manager-0.12.1-1.x86_64.rpm
+vgpu_nvidia_mig_manager_deb_url: https://github.com/NVIDIA/mig-parted/releases/download/v0.12.1/nvidia-mig-manager_0.12.1-1_amd64.deb

@@ -22,6 +22,7 @@
     filename: "{{ vgpu_driver_url_components.path | basename }}"
     install_script: "{{ find_result.files.0.path }}"
     ansible_become: true
+  when: vgpu_nvidia_driver_install_enabled | bool
   block:
     - name: Ensure target directory exists
       ansible.builtin.file:

@@ -10,11 +10,20 @@
   become: true
   when: vgpu_definition.mig_devices is defined
 
+- name: Collect mig status
+  ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} --query-gpu='mig.mode.current' --format csv,noheader
+  changed_when: false
+  register: mig_status_result
+  when:
+    - vgpu_definition.mig_devices is defined
+
 - name: Enable mig mode
   ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} -mig 1
   changed_when: false
   become: true
-  when: vgpu_definition.mig_devices is defined
+  when:
+    - vgpu_definition.mig_devices is defined
+    - mig_status_result.stdout != "Enabled"
 
 - name: Template nvidia-sriov service
   ansible.builtin.template:

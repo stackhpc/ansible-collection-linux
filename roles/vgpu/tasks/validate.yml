@@ -3,3 +3,4 @@
   ansible.builtin.assert:
     that: vgpu_driver_url | length > 0
     fail_msg: "Please ensure you set the variable: vgpu_driver_url"
+  when: vgpu_nvidia_driver_install_enabled | bool
