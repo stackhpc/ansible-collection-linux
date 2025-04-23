@@ -1,17 +1,41 @@
 # stackhpc.linux.vgpu
 
-## Prerequisites
+This role can configure vGPUs or multi instance GPU (MIG) on NVIDIA cards.
 
-- [Download Nvidia GRID driver](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) (This requires a login).
-    - The location of this file can be customised with the `vgpu_driver_url` variable:
-      * e.g to use an artifact uploaded to a http server:
-      `vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip`
-      * e.g to use file the control host:
-      `vgpu_driver_url: "{{ lookup('env', 'HOME'}}/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"`
+## Prerequisites
 
 - Enable IOMUU
     - Make sure the related options are enabled in the BIOS
     - Intel CPUs require the intel_iommu kernel command line argument
+ 
+## Drivers
+
+The role will attempt to install a driver from ``vgpu_driver_url``. Currently this only works with
+the data center drivers such as the [Nvidia GRID drivers](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) or the [AI enterprise drivers](https://www.nvidia.com/en-gb/data-center/products/ai-enterprise/); both of which can be obtained from the NVIDIA licensing portal. The use of data centre drivers is not mandatory
+if you only want to use MIG without vGPUs.
+
+The location of this file can be customised with the `vgpu_driver_url` variable, e.g to use an artifact uploaded to a http server:
+
+```
+vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip
+```
+
+e.g to use file the control host:
+
+```
+vgpu_driver_url: "{{ lookup('env', 'HOME'}}/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"
+```
+
+At this moment in time, the role only supports zip archives, Future work will add support for other packaging formats such as: .deb and .rpm, and .run.
+
+It is possible to install a driver via some other means by setting the ``vgpu_nvidia_driver_install_enabled``  configuration option, e.g:
+```
+---
+vgpu_nvidia_driver_install_enabled: false
+```
+
+This will cause the role to assume that the driver is already installed.
+
 
 ## Enabling SR-IOV on dell hardware
 
