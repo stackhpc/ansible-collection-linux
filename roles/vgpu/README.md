@@ -4,6 +4,10 @@ This role can configure vGPUs or multi instance GPU (MIG) on NVIDIA cards.
 
 ## Prerequisites
 
+When creating MIG devices with no vGPU instances layered on top, there are no special requirements.
+
+When creating VGPUs:
+
 - Enable IOMUU
     - Make sure the related options are enabled in the BIOS
     - Intel CPUs require the intel_iommu kernel command line argument
