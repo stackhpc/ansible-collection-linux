@@ -37,13 +37,13 @@ The location of this file can be customised with the `vgpu_driver_url` variable,
 vgpu_driver_url: http://seed/pulp/content/nvidia/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip
 ```
 
-e.g to use file the control host:
+e.g to use a file on the control host:
 
 ```
 vgpu_driver_url: "{{ lookup('env', 'HOME'}}/NVIDIA-GRID-Linux-KVM-525.85.07-525.85.05-528.24.zip"
 ```
 
-At this moment in time, the role only supports zip archives, Future work will add support for other packaging formats such as: .deb and .rpm, and .run.
+At this moment in time, the role only supports zip archives, Future work may add support for other packaging formats such as: .deb and .rpm, and .run.
 
 It is possible to install a driver via some other means by setting the ``vgpu_nvidia_driver_install_enabled``  configuration option, e.g:
 ```
