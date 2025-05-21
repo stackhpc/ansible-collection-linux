@@ -11,7 +11,10 @@ This role can configure vGPUs or multi instance GPU (MIG) on NVIDIA cards.
 ## Drivers
 
 The role will attempt to install a driver from ``vgpu_driver_url``. Currently this only works with
-the data center drivers such as the [Nvidia GRID drivers](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software) or the [AI enterprise drivers](https://www.nvidia.com/en-gb/data-center/products/ai-enterprise/); both of which can be obtained from the NVIDIA licensing portal. The use of data centre drivers is not mandatory
+the data center drivers such as the
+[Nvidia GRID drivers](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software)
+or the [AI enterprise drivers](https://www.nvidia.com/en-gb/data-center/products/ai-enterprise/); 
+both of which can be obtained from the NVIDIA licensing portal. The use of data centre drivers is not mandatory
 if you only want to use MIG without vGPUs.
 
 The location of this file can be customised with the `vgpu_driver_url` variable, e.g to use an artifact uploaded to a http server:
