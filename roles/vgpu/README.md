@@ -1,10 +1,10 @@
 # stackhpc.linux.vgpu
 
-This role can configure vGPUs or multi instance GPU (MIG) on NVIDIA cards.
+This role can configure vGPUs or Multi Instance GPU (MIG) on NVIDIA cards.
 
 ## Prerequisites
 
-### multi instance GPU (MIG)
+### Multi Instance GPU (MIG)
 
 When creating MIG devices with no vGPU instances layered on top, there are no special requirements.
 
