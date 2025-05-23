@@ -15,9 +15,18 @@
   changed_when: old_cmdline != kernel_cmdline | select() | sort | list
   notify: "{{ kernel_restart_handler }}"
 
-- name: Slurp /etc/default/grub
+- name: Look for cloud-init grub file
+  ansible.builtin.stat:
+    path: "{{ cloudinit_grub_conf }}"
+  register: cloudinit_result
+
+- name: Set fact with the grub conf file path
+  ansible.builtin.set_fact:
+    grub_conf_file: "{{ cloudinit_result.stat.exists | ternary(cloudinit_grub_conf, default_grub_conf) }}"
+
+- name: Slurp grub config file
   ansible.builtin.slurp:
-    path: /etc/default/grub
+    path: "{{ grub_conf_file }}"
   register: grub_result
   become: true
 
@@ -62,9 +71,9 @@
   ansible.builtin.debug:
     var: grub_cmdline_linux_new
 
-- name: Set GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub
+- name: Set GRUB_CMDLINE_LINUX_DEFAULT in the appropriate grub conf
   ansible.builtin.lineinfile:
-    path: /etc/default/grub
+    path: "{{ grub_conf_file }}"
     regexp: ^GRUB_CMDLINE_LINUX_DEFAULT
     line: GRUB_CMDLINE_LINUX_DEFAULT="{{ grub_cmdline_linux_new | join(' ') }}"
     backup: "{{ backup_grub_config_file }}"
