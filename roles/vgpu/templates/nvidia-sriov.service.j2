@@ -1,5 +1,5 @@
 [Unit]
-Description=Enable SR-IOV on Nvidia card ({{ vgpu_definition.pci_address }})
+Description=Enable SR-IOV on NVIDIA card ({{ vgpu_definition.pci_address }})
 Before=nvidia-mig-manager.service
 DefaultDependencies=no
 After=local-fs.target {{ vgpu_systemd_device[vgpu_definition.pci_address] }}
@@ -15,9 +15,10 @@ User=root
 # I was unable to get this to show up again without a reboot.
 ExecStartPre=/bin/sleep {{ vgpu_sriov_init_delay }}
 # NOTE(wszumski): The sriov-manage script will unbind the nvidia driver to
-# initialize the virtual functions.  If it fails part way through, the driver
-# can be left unbound, and subsequent executions of sriov-mange will fail. This
-# ensures that the nvidia driver is always bound before we run sriov-manage.
+# initialize the virtual functions. If it fails part way through, the driver
+# can be left unbound, and subsequent executions of sriov-manage will fail.
+# This ensures that the nvidia driver is always bound before we run
+# sriov-manage.
 ExecStart=/bin/bash -c "echo '{{ vgpu_definition.pci_address }}' > /sys/bus/pci/drivers/nvidia/bind || true"
 ExecStart=/usr/lib/nvidia/sriov-manage -e {{ vgpu_definition.pci_address }}
 RemainAfterExit=yes

@@ -1,5 +1,5 @@
 ---
-# TODO: submit bug report to nvidia-mig-manger about not supporting PCI IDs
+# TODO: submit bug report to nvidia-mig-manager about not supporting PCI IDs
 
 - name: Look up card index
   ansible.builtin.command: nvidia-smi -i {{ vgpu_definition.pci_address }} --query-gpu="index" --format csv,noheader
