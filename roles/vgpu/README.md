@@ -26,7 +26,7 @@ When creating MIG devices with no vGPU instances layered on top, there are no sp
 
 The role will attempt to install a driver from ``vgpu_driver_url``. Currently this only works with
 the data center drivers such as the
-[Nvidia GRID drivers](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software)
+[NVIDIA GRID drivers](https://docs.nvidia.com/grid/latest/grid-software-quick-start-guide/index.html#redeeming-pak-and-downloading-grid-software)
 or the [AI enterprise drivers](https://www.nvidia.com/en-gb/data-center/products/ai-enterprise/); 
 both of which can be obtained from the NVIDIA licensing portal. The use of data centre drivers is not mandatory
 if you only want to use MIG without vGPUs.
@@ -169,7 +169,7 @@ Example of templated unit file:
 
 ```
 [Unit]
-Description=Enable SR-IOV on Nvidia card (0000:17:00.0)
+Description=Enable SR-IOV on NVIDIA card (0000:17:00.0)
 Before=nvidia-mig-manager.service
 DefaultDependencies=no
 After=local-fs.target sys-devices-pci0000:16-0000:16:02.0-0000:17:00.0.device
