@@ -6,4 +6,4 @@
   ansible.builtin.service:
     name: systemd-networkd
     state: restarted
-  when: systemd_networkd_apply_config
+  when: systemd_networkd_apply_config | bool
