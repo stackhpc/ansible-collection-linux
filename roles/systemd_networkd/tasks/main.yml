@@ -17,7 +17,7 @@
 
 - name: Enable systemd-networkd
   become: true
-  when: systemd_networkd_network or systemd_networkd_link or systemd_networkd_netdev
+  when: systemd_networkd_network is truthy or systemd_networkd_link is truthy or systemd_networkd_netdev is truthy
   block:
     # TODO(mattcrees): Remove once this gets into a versioned release:
     # https://github.com/ansible/ansible/pull/77754
@@ -37,7 +37,7 @@
     name: systemd-resolved
     enabled: true
     state: started
-  when: systemd_networkd_enable_resolved
+  when: systemd_networkd_enable_resolved | bool
 
 - name: Replace /etc/resolv.conf with a symlink to the systemd-resolved stub
   become: true
@@ -46,6 +46,6 @@
     src: /run/systemd/resolve/stub-resolv.conf
     state: link
     force: true
-  when: systemd_networkd_symlink_resolv_conf
+  when: systemd_networkd_symlink_resolv_conf | bool
 
 # vim: set ts=2 sw=2:
