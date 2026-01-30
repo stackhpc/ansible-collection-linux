@@ -7,4 +7,5 @@ skip_list:
   - yaml[line-length]
   - galaxy[no-changelog]
   - meta-runtime[unsupported-version]
+  - var-naming[no-role-prefix]
 use_default_rules: true
