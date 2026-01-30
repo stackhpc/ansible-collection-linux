@@ -1,0 +1,45 @@
+---
+- name: Blacklist nouveau
+  ansible.builtin.blockinfile:
+    path: /etc/modprobe.d/blacklist-nouveau.conf
+    block: |
+      blacklist nouveau
+      options nouveau modeset=0
+    mode: "0664"
+    owner: root
+    group: root
+    create: true
+  become: true
+  notify:
+    - Regenerate initramfs
+    - reboot # no-qa
+
+- name: Ignore unsupported model specific registers
+  # Occasionally, applications running in the VM may crash unexpectedly,
+  # whereas they would run normally on a physical machine. If, while
+  # running dmesg -wH, you encounter an error mentioning MSR, the reason
+  # for those crashes is that KVM injects a General protection fault (GPF)
+  # when the guest tries to access unsupported Model-specific registers
+  # (MSRs) - this often results in guest applications/OS crashing. A
+  # number of those issues can be solved by passing the ignore_msrs=1
+  # option to the KVM module, which will ignore unimplemented MSRs.
+  # source: https://wiki.archlinux.org/index.php/QEMU
+  ansible.builtin.blockinfile:
+    path: /etc/modprobe.d/kvm.conf
+    block: |
+      options kvm ignore_msrs=Y
+      # This option is not available in centos 7 as the kernel is too old,
+      # but it can help with dmesg spam in newer kernels (centos8?). Sample
+      # dmesg log message:
+      #  [  +0.000002] kvm [8348]: vcpu0, guest rIP: 0xffffffffb0a767fa ignored rdmsr: 0x619
+      # options kvm report_ignored_msrs=N
+    mode: "0664"
+    owner: root
+    group: root
+    create: true
+  become: true
+  notify: reboot # no-qa
+
+- name: Add IOMMU config to kernel command line
+  ansible.builtin.include_role:
+    name: stackhpc.linux.iommu

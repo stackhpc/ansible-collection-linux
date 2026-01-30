@@ -1,18 +1,14 @@
 # stackhpc.linux.iommu
 
-## Variables
-
-- `iommu_pt`: Default true, Configure passthrough mode, which doesn't require DMA translation.
-
 ## Example playbook
 
 ```
 ---
-- name: Enable IOMMU
-  hosts: iommu
+- name: Enable GPU Passthrough
+  hosts: gpu_passthrough
   tasks:
     - import_role:
-      name: stackhpc.linux.iommu
+      name: stackhpc.linux.gpu_passthrough
   handlers:
     - name: reboot
       fail:
@@ -21,15 +17,15 @@
 
 ```
 
-Or if you want the node to reboot automatically
+Or if you want the machine to reboot automatically:
 
 ```
 ---
-- name: Enable IOMMU
-  hosts: iommu
+- name: Enable GPU Passthrough
+  hosts: gpu_passthrough
   tasks:
     - import_role:
-      name: stackhpc.linux.iommu
+      name: stackhpc.linux.gpu_passthrough
   handlers:
     - name: reboot
       reboot:

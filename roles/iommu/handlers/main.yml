@@ -1,0 +1,20 @@
+---
+- name: Regenerate initramfs (RedHat)
+  listen: Regenerate initramfs
+  ansible.builtin.shell: |-
+    #!/bin/bash
+    set -eux
+    dracut -v -f /boot/initramfs-$(uname -r).img $(uname -r)
+  become: true
+  changed_when: true
+  when: ansible_facts.os_family == 'RedHat'
+
+- name: Regenerate initramfs (Debian)
+  listen: Regenerate initramfs
+  ansible.builtin.shell: |-
+    #!/bin/bash
+    set -eux
+    update-initramfs -u -k $(uname -r)
+  become: true
+  changed_when: true
+  when: ansible_facts.os_family == 'Debian'
