@@ -2,7 +2,7 @@
 Description=Enable SR-IOV on NVIDIA card ({{ vgpu_definition.pci_address }})
 Before=nvidia-mig-manager.service
 DefaultDependencies=no
-After=local-fs.target {{ vgpu_systemd_device[vgpu_definition.pci_address] }}
+After=local-fs.target {{ vgpu_systemd_device[vgpu_definition.pci_address] }} {{ vgpu_previous_sriov_services | default([]) | join(' ') }}
 Wants={{ vgpu_systemd_device[vgpu_definition.pci_address] }}
 
 [Service]
