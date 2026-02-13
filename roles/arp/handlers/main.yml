@@ -1,0 +1,6 @@
+---
+# handlers file for stackhpc.linux.arp
+- name: Restart for arp change
+  ansible.builtin.reboot:
+    msg: "Rebooting on arp change"
+  when: arp_arp_apply_config
