@@ -26,6 +26,8 @@ sriov_os_pkgs_deb:
   - linux-headers-generic
   - make
 
+sriov_do_reboot: true
+
 sriov_restart_handler: reboot
 
 sriov_numvfs: 8

@@ -56,6 +56,19 @@
   become: true
   changed_when: false
 
+- name: Abort SR-IOV configuration because reboot is disabled
+  fail:
+    msg: >
+      SR-IOV config changes requires a reboot, but sriov_do_reboot is false.
+      Please run again with sriov_do_reboot set to true to reboot.
+  vars:
+    sriov_enabled: "{{ mlxconfig_result.stdout | regex_search('^.*SRIOV_EN.*True.*$', multiline=True) }}"
+    regex: ^.*NUM_OF_VFS.*?{{ sriov_numvfs }}.*$
+    num_of_vfs: "{{ mlxconfig_result.stdout | regex_search(regex, multiline=True) }}"
+  when:
+    - (not sriov_enabled) or (not num_of_vfs)
+    - not sriov_do_reboot | bool
+
 - name: Enable SR-IOV with mlxconfig
   ansible.builtin.command: mlxconfig -y -d {{ pci_addr }} set SRIOV_EN=1
   become: true

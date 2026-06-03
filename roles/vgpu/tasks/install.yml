@@ -24,6 +24,14 @@
     ansible_become: true
   when: vgpu_nvidia_driver_install_enabled | bool
   block:
+    - name: Abort VGPU configuration because reboot is disabled
+      fail:
+        msg: >
+          VGPU config changes requires a reboot, but vgpu_do_reboot is false.
+          Please run again with vgpu_do_reboot set to true to reboot.
+      when:
+        - not vgpu_do_reboot | bool
+
     - name: Ensure target directory exists
       ansible.builtin.file:
         state: directory
