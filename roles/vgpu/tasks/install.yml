@@ -27,7 +27,7 @@
     - name: Abort VGPU configuration because reboot is disabled
       ansible.builtin.fail:
         msg: >
-          VGPU config changes requires a reboot, but vgpu_do_reboot is false.
+          VGPU config changes require a reboot, but vgpu_do_reboot is false.
           Please run again with vgpu_do_reboot set to true to reboot.
       when:
         - not vgpu_do_reboot | bool
