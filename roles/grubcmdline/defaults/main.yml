@@ -9,3 +9,5 @@ kernel_restart_handler: reboot # noqa var-naming[no-role-prefix]
 # optionally skip backing up the config file. Can cause issues on some
 # filesystems due to filenames containing illegal characters
 backup_grub_config_file: true # noqa var-naming[no-role-prefix]
+
+grubcmdline_do_reboot: true

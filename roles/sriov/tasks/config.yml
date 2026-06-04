@@ -1,4 +1,12 @@
 ---
+- name: Abort SR-IOV configuration because reboot is disabled
+  ansible.builtin.fail:
+    msg: >
+      SR-IOV config changes require a reboot, but sriov_do_reboot is false.
+      Please run again with sriov_do_reboot set to true to reboot.
+  when:
+    - not sriov_do_reboot | bool
+
 - name: Persist sriov_numvfs with udev rule
   ansible.builtin.blockinfile:
     path: "{{ sriov_udev_rule_path }}"

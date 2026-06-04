@@ -9,6 +9,15 @@
   ansible.builtin.set_fact:
     old_cmdline: "{{ result.stdout.split() | select('search', kernel_cmdline_regex) | sort | list }}"
 
+- name: Abort grub cmdline configuration because reboot is disabled
+  ansible.builtin.fail:
+    msg: >
+      grub cmdline changes requires a reboot, but grubcmdline_do_reboot is
+      false. Please run again with grubcmdline_do_reboot set to true to reboot.
+  when:
+    - old_cmdline != kernel_cmdline | select() | sort | list
+    - not grubcmdline_do_reboot | bool
+
 - name: Notify reboot handler
   ansible.builtin.debug:
     msg: Old command line was {{ result.stdout }}
