@@ -31,13 +31,32 @@
         name: systemd-networkd
         enabled: true
 
-- name: Start and enable systemd-resolved
+- name: Enable systemd-resolved
   become: true
-  ansible.builtin.service:
-    name: systemd-resolved
-    enabled: true
-    state: started
-  when: systemd_networkd_enable_resolved | bool
+  when: systemd_networkd_enable_resolved is truthy
+  block:
+    - name: Start and enable systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        enabled: true
+        state: started
+
+    - name: Create a resolved.conf.d directory if it does not exist
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d/
+        state: directory
+        mode: '0755'
+
+    - name: Configure dns.conf
+      template:
+        src: "dns_config.j2"
+        dest: "/etc/systemd/resolved.conf.d/dns.conf"
+        mode: "0644"
+
+    - name: Restart systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: restarted
 
 - name: Replace /etc/resolv.conf with a symlink to the systemd-resolved stub
   become: true
