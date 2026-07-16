@@ -31,7 +31,7 @@
         name: systemd-networkd
         enabled: true
 
-- name: Enable systemd-resolved
+- name: Enable and configure systemd-resolved
   become: true
   when: systemd_networkd_enable_resolved is truthy
   block:
