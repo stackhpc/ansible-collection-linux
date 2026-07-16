@@ -48,7 +48,7 @@
         mode: '0755'
 
     - name: Configure dns.conf
-      template:
+      ansible.builtin.template:
         src: "dns_config.j2"
         dest: "/etc/systemd/resolved.conf.d/dns.conf"
         mode: "0644"
