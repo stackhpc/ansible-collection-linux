@@ -1,7 +1,9 @@
 # {{ ansible_managed }}
 
 [Resolve]
+{% if resolv_nameservers is defined and resolv_nameservers | length > 0 %}
 DNS={{ resolv_nameservers|join(' ') }}
+{% endif %}
 {% if resolv_search is defined and resolv_search | length > 0 %}
 Domains={{ resolv_search|join(' ') }}
 {% endif %}
