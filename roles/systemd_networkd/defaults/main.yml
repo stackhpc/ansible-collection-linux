@@ -10,6 +10,6 @@ systemd_networkd_symlink_resolv_conf: true
 systemd_networkd_cleanup: false
 systemd_networkd_cleanup_patterns: []
 systemd_networkd_cleanup_patterns_use_regex: false
-resolv_nameservers: []
+resolv_nameservers: 8.8.8.8
 
 # vim: set ts=2 sw=2:
