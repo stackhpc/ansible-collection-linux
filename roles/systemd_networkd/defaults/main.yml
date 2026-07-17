@@ -11,4 +11,6 @@ systemd_networkd_cleanup: false
 systemd_networkd_cleanup_patterns: []
 systemd_networkd_cleanup_patterns_use_regex: false
 
+ansible_managed: "# Ansible managed by stackhpc.linux collection."
+
 # vim: set ts=2 sw=2:
