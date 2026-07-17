@@ -41,6 +41,16 @@
         state: directory
         mode: '0755'
 
+    - name: Configure NetworkManager dns.conf to use systemd-resolved
+      ansible.builtin.template:
+        src: "nm_dns_config.j2"
+        dest: "/etc/NetworkManager/conf.d/dns.conf"
+        mode: "0644"
+      notify:
+        - Restart NetworkManager
+      when:
+        - ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version | int >= 9
+
     - name: Configure dns.conf
       ansible.builtin.template:
         src: "dns_config.j2"
