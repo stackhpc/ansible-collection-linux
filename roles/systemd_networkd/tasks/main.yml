@@ -35,6 +35,24 @@
   become: true
   when: systemd_networkd_enable_resolved is truthy
   block:
+    - name: Create a NetworkManager/conf.d directory if it does not exist
+      ansible.builtin.file:
+        path: /etc/NetworkManager/conf.d/
+        state: directory
+        mode: '0755'
+      when:
+        - ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version | int >= 9
+
+    - name: Configure NetworkManager dns.conf to use systemd-resolved
+      ansible.builtin.template:
+        src: "nm_dns_config.j2"
+        dest: "/etc/NetworkManager/conf.d/dns.conf"
+        mode: "0644"
+      notify:
+        - Restart NetworkManager
+      when:
+        - ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version | int >= 9
+
     - name: Create a resolved.conf.d directory if it does not exist
       ansible.builtin.file:
         path: /etc/systemd/resolved.conf.d/
