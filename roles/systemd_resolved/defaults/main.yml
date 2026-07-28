@@ -1,0 +1,6 @@
+---
+
+systemd_networkd_enable_resolved: true
+systemd_networkd_symlink_resolv_conf: true
+
+# vim: set ts=2 sw=2:

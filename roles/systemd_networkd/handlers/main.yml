@@ -7,15 +7,3 @@
     name: systemd-networkd
     state: restarted
   when: systemd_networkd_apply_config | bool
-
-- name: Restart systemd-resolved
-  become: true
-  ansible.builtin.service:
-    name: systemd-resolved
-    state: restarted
-
-- name: Restart NetworkManager
-  become: true
-  ansible.builtin.service:
-    name: NetworkManager
-    state: restarted
