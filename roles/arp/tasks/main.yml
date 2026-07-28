@@ -1,0 +1,18 @@
+---
+# By default, Ubuntu's configuration permits:
+#   - Responding to ARP requests with addresses from other interfaces (arp_filter=0)
+#   - Reply for any local target IP address, configured on any interface (arp_ignore=0)
+# This behaviour breaks RoCE when a host has multiple interfaces in the same network.
+- name: Configure sysctl with ARP settings
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/15-fixarp.conf
+    content: |
+      net.ipv4.conf.all.arp_ignore={{ arp_arp_ignore | default(arp_arp_ignore_default, true) }}
+      net.ipv4.conf.all.arp_announce={{ arp_arp_announce | default(arp_arp_announce_default, true) }}
+    mode: "0644"
+    owner: root
+    group: root
+  when:
+    - ansible_facts.os_family == "Debian"
+  notify:
+    - Restart for arp change
