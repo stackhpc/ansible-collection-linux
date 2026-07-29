@@ -6,14 +6,9 @@
 - name: Import config tasks
   ansible.builtin.import_tasks: config.yml
 
-- name: Make sure systemd-resolved is installed
-  become: true
-  ansible.builtin.package:
-    name: systemd-resolved
-    state: present
-  when:
-    - ansible_facts.distribution | lower == 'debian'
-    - ansible_facts.distribution_major_version >= '12'
+- name: Include systemd-resolved role
+  ansible.builtin.include_role:
+    name: stackhpc.linux.systemd_resolved
 
 - name: Enable systemd-networkd
   become: true
@@ -30,38 +25,5 @@
       ansible.builtin.service:
         name: systemd-networkd
         enabled: true
-
-- name: Enable and configure systemd-resolved
-  become: true
-  when: systemd_networkd_enable_resolved is truthy
-  block:
-    - name: Create a resolved.conf.d directory if it does not exist
-      ansible.builtin.file:
-        path: /etc/systemd/resolved.conf.d/
-        state: directory
-        mode: '0755'
-
-    - name: Configure dns.conf
-      ansible.builtin.template:
-        src: "dns_config.j2"
-        dest: "/etc/systemd/resolved.conf.d/dns.conf"
-        mode: "0644"
-      notify:
-        - Restart systemd-resolved
-
-    - name: Start and enable systemd-resolved
-      ansible.builtin.service:
-        name: systemd-resolved
-        enabled: true
-        state: started
-
-- name: Replace /etc/resolv.conf with a symlink to the systemd-resolved stub
-  become: true
-  ansible.builtin.file:
-    path: /etc/resolv.conf
-    src: /run/systemd/resolve/stub-resolv.conf
-    state: link
-    force: true
-  when: systemd_networkd_symlink_resolv_conf | bool
 
 # vim: set ts=2 sw=2:
